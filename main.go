@@ -16,8 +16,10 @@ var (
 	flagPct   = flag.String("pct", "", "coverage percentage (required)")
 )
 
+var ErrMissingPctFlag = errors.New("missing required flag -pct")
+
 func mainfn() int {
-	var err error
+	err := ErrMissingPctFlag
 	if *flagPct != "" {
 		repoDir := os.ExpandEnv(flag.Arg(0))
 		if repoDir == "" {
@@ -40,12 +42,10 @@ func mainfn() int {
 	}
 
 	retv := 125
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
-		if e := errors.Unwrap(err); e != nil {
-			if errno, ok := e.(syscall.Errno); ok {
-				retv = int(errno)
-			}
+	fmt.Fprintln(os.Stderr, err.Error())
+	if e := errors.Unwrap(err); e != nil {
+		if errno, ok := e.(syscall.Errno); ok {
+			retv = int(errno)
 		}
 	}
 	return retv
