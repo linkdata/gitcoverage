@@ -55,7 +55,7 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/linkdata/gitcoverage/main.go (36.4%)</option>
+				<option value="file0">github.com/linkdata/gitcoverage/main.go (90.9%)</option>
 				
 				</select>
 			</div>
@@ -90,21 +90,21 @@ var (
 var ErrMissingPctFlag = errors.New("missing required flag -pct")
 
 func mainfn() int <span class="cov8" title="1">{
-        err := ErrMissingPctFlag
-        if *flagPct != "" </span><span class="cov0" title="0">{
-                repoDir := os.ExpandEnv(flag.Arg(0))
-                if repoDir == "" </span><span class="cov0" title="0">{
+        vs, err := gitsemver.New(*flagGit)
+        if err == nil </span><span class="cov8" title="1">{
+                if *flagDebug </span><span class="cov8" title="1">{
+                        vs.DebugOut = os.Stderr
+                }</span>
+                <span class="cov8" title="1">repoDir := os.ExpandEnv(flag.Arg(0))
+                if repoDir == "" </span><span class="cov8" title="1">{
                         repoDir = "."
                 }</span>
-                <span class="cov0" title="0">var vs *gitsemver.GitSemVer
-                if vs, err = gitsemver.New(*flagGit); err == nil </span><span class="cov0" title="0">{
-                        if *flagDebug </span><span class="cov0" title="0">{
-                                vs.DebugOut = os.Stderr
-                        }</span>
-                        <span class="cov0" title="0">if repoDir, err = vs.Git.CheckGitRepo(repoDir); err == nil </span><span class="cov0" title="0">{
-                                var vi gitsemver.VersionInfo
-                                if vi, err = vs.GetVersion(repoDir); err == nil </span><span class="cov0" title="0">{
-
+                <span class="cov8" title="1">if repoDir, err = vs.Git.CheckGitRepo(repoDir); err == nil </span><span class="cov8" title="1">{
+                        var vi gitsemver.VersionInfo
+                        if vi, err = vs.GetVersion(repoDir); err == nil </span><span class="cov8" title="1">{
+                                if *flagPct == "" </span><span class="cov8" title="1">{
+                                        err = ErrMissingPctFlag
+                                }</span> else<span class="cov0" title="0"> {
                                         fmt.Println(vi.Branch)
                                         return 0
                                 }</span>
@@ -114,8 +114,8 @@ func mainfn() int <span class="cov8" title="1">{
 
         <span class="cov8" title="1">retv := 125
         fmt.Fprintln(os.Stderr, err.Error())
-        if e := errors.Unwrap(err); e != nil </span><span class="cov0" title="0">{
-                if errno, ok := e.(syscall.Errno); ok </span><span class="cov0" title="0">{
+        if e := errors.Unwrap(err); e != nil </span><span class="cov8" title="1">{
+                if errno, ok := e.(syscall.Errno); ok </span><span class="cov8" title="1">{
                         retv = int(errno)
                 }</span>
         }
