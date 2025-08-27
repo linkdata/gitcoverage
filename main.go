@@ -19,21 +19,21 @@ var (
 var ErrMissingPctFlag = errors.New("missing required flag -pct")
 
 func mainfn() int {
-	err := ErrMissingPctFlag
-	if *flagPct != "" {
+	vs, err := gitsemver.New(*flagGit)
+	if err == nil {
+		if *flagDebug {
+			vs.DebugOut = os.Stderr
+		}
 		repoDir := os.ExpandEnv(flag.Arg(0))
 		if repoDir == "" {
 			repoDir = "."
 		}
-		var vs *gitsemver.GitSemVer
-		if vs, err = gitsemver.New(*flagGit); err == nil {
-			if *flagDebug {
-				vs.DebugOut = os.Stderr
-			}
-			if repoDir, err = vs.Git.CheckGitRepo(repoDir); err == nil {
-				var vi gitsemver.VersionInfo
-				if vi, err = vs.GetVersion(repoDir); err == nil {
-
+		if repoDir, err = vs.Git.CheckGitRepo(repoDir); err == nil {
+			var vi gitsemver.VersionInfo
+			if vi, err = vs.GetVersion(repoDir); err == nil {
+				if *flagPct == "" {
+					err = ErrMissingPctFlag
+				} else {
 					fmt.Println(vi.Branch)
 					return 0
 				}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"os"
 	"testing"
 )
 
@@ -11,6 +12,7 @@ func TestMainFn(t *testing.T) {
 }
 
 func TestMainError(t *testing.T) {
+	os.Args = append(os.Args, "/proc/.nonexistant")
 	exitFn = func(i int) {
 		if i == 0 {
 			t.Error(i)
