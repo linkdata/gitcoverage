@@ -13,8 +13,9 @@
 #     contents: write
 
 name: "gitcoverage"
-icon: "percent"
-color: "green"
+branding:
+  icon: "percent"
+  color: "green"
 description: "Create/update coverage/<branch>/badge.svg (+ optional report.html) on the 'coverage' branch."
 author: "johan@linkdata.se"
 inputs:
