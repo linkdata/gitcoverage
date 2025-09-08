@@ -1,7 +1,7 @@
 # gitcoverage
 
 Generate code coverage badge and push it and optional HTML report to the 'coverage' branch.
-You need to have given write permissions for the for the workflow.
+You need to have given write permissions for the for the workflow, and to check out using `fetch-depth: 0`.
 Reference the generated badge in your README.md like this:
 
 ```md
