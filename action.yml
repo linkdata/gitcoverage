@@ -36,29 +36,74 @@ runs:
         git config --local user.email "action@github.com"
         git config --local user.name  "GitHub Action"
 
-    - name: Detect current branch (actual branch, not tag)
+    - name: Detect current branch (handles tag refs via containing branch)
       id: branch
       shell: bash
       run: |
         set -euo pipefail
-        # Prefer PR source branch, then ref_name if it's a branch, else default branch of origin
-        BRANCH="${GITHUB_HEAD_REF:-}"
-        if [[ -z "$BRANCH" ]]; then
-          if [[ "${GITHUB_REF_TYPE:-}" == "branch" && -n "${GITHUB_REF_NAME:-}" ]]; then
-            BRANCH="${GITHUB_REF_NAME}"
-          else
-            # Fallback to remote default branch (origin/HEAD -> refs/remotes/origin/<default>)
-            BRANCH="$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@' || true)"
+
+        # 1) Fast paths: PR source branch or plain branch ref
+        if [[ -n "${GITHUB_HEAD_REF:-}" ]]; then
+          BRANCH="${GITHUB_HEAD_REF}"
+        elif [[ "${GITHUB_REF_TYPE:-}" == "branch" && -n "${GITHUB_REF_NAME:-}" ]]; then
+          BRANCH="${GITHUB_REF_NAME}"
+        else
+          BRANCH=""
+        fi
+
+        # 2) If we're on a tag, resolve the branch that contains this tag
+        if { [[ -z "$BRANCH" ]] && [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; } || [[ "${GITHUB_REF:-}" == refs/tags/* ]]; then
+          TAG="${GITHUB_REF_NAME:-${GITHUB_REF#refs/tags/}}"
+          echo "Ref is a tag (${TAG}); resolving containing branch…"
+
+          # Ensure we have tags and remote branches locally
+          git fetch --tags --force origin || true
+          git fetch origin +refs/heads/*:refs/remotes/origin/* --prune || true
+
+          # Use the requested command for local branches first:
+          #   git branch --format "%(refname:short)" --contains tags/TAG
+          mapfile -t MATCHES < <(git branch --format "%(refname:short)" --contains "tags/$TAG" || true)
+
+          # If nothing locally, check remote branches that contain the tag, then strip "origin/"
+          if [[ ${#MATCHES[@]} -eq 0 ]]; then
+            mapfile -t RMATCHES < <(git branch -r --format "%(refname:short)" --contains "tags/$TAG" || true)
+            MATCHES=()
+            for r in "${RMATCHES[@]}"; do
+              r="${r#origin/}"
+              [[ "$r" == *"HEAD"* ]] && continue
+              MATCHES+=("$r")
+            done
+          fi
+
+          if [[ ${#MATCHES[@]} -gt 0 ]]; then
+            # Prefer remote default branch if present, else 'main'/'master', else first match
+            DEF="$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@' || true)"
+            PICK=""
+            if [[ -n "$DEF" ]]; then
+              for b in "${MATCHES[@]}"; do [[ "$b" == "$DEF" ]] && PICK="$b" && break; done
+            fi
+            if [[ -z "$PICK" ]]; then
+              for pref in main master; do
+                for b in "${MATCHES[@]}"; do [[ "$b" == "$pref" ]] && PICK="$b" && break 2; done
+              done
+            fi
+            BRANCH="${PICK:-${MATCHES[0]}}"
           fi
         fi
+
+        # 3) Fallbacks if still unknown
+        if [[ -z "$BRANCH" ]]; then
+          BRANCH="$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@' || true)"
+        fi
         if [[ -z "$BRANCH" || "$BRANCH" == "HEAD" ]]; then
-          # Ultimate fallback: try current branch name
           BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
         fi
         if [[ -z "$BRANCH" || "$BRANCH" == "HEAD" ]]; then
           echo "Could not determine branch name." >&2
           exit 1
         fi
+
+        echo "Resolved branch: $BRANCH"
         echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
 
     - name: Ensure 'coverage' branch exists (create orphan if needed)
