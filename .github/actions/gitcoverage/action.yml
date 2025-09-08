@@ -163,7 +163,7 @@ runs:
         WIDTH=$((LEFT_W + RIGHT_W))
 
         LABEL_X=$(( LEFT_W / 2 ))
-        LABEL_SHADOW_X=$(( LABEL_X + 1 ))
+        LABEL_X_SHADOW=$(( LABEL_X + 1 ))
         VALUE_X=$(( LEFT_W + RIGHT_W / 2 ))
         VALUE_X_SHADOW=$(( VALUE_X + 1 ))
 
