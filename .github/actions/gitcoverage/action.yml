@@ -46,10 +46,11 @@ runs:
         echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
 
     - name: Ensure 'coverage' branch exists (create orphan if needed)
+      env:
+        BRANCH: ${{ steps.branch.outputs.branch }}
       shell: bash
       run: |
         set -euo pipefail
-        BRANCH="${{ steps.branch.outputs.branch }}"
         # Does 'coverage' branch exist on origin?
         if git ls-remote --exit-code --heads origin coverage >/dev/null 2>&1; then
           echo "'coverage' branch exists."
@@ -81,14 +82,16 @@ runs:
 
     - name: Prepare coverage/<branch> directory
       shell: bash
+      env:
+        BRANCH: ${{ steps.branch.outputs.branch }}
       run: |
         set -euo pipefail
-        BRANCH="${{ steps.branch.outputs.branch }}"
-        mkdir -p "coverage/coverage/${BRANCH}"
+        mkdir -p "coverage/${BRANCH}"
 
     - name: Parse coverage input and generate SVG badge
       shell: bash
       env:
+        BRANCH: ${{ steps.branch.outputs.branch }}
         INPUT_COVERAGE: ${{ inputs.coverage }}
       run: |
         set -euo pipefail
@@ -143,38 +146,40 @@ runs:
             <rect x="${LEFT_W}" width="${RIGHT_W}" height="20" fill="${HEX}"/>
             <rect width="${WIDTH}" height="20" fill="url(#s)"/>
           </g>
-          <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
+          <g fill="#fff" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
             <text x="$((LEFT_W/2))" y="15">${LABEL}</text>
             <text x="$((LEFT_W + RIGHT_W/2))" y="15">${VALUE}</text>
           </g>
         </svg>
         EOF
         )"
-        echo "$SVG" > "coverage/coverage/${{ steps.branch.outputs.branch }}/badge.svg"
+        echo "$SVG" > "coverage/${BRANCH}/badge.svg"
 
     - name: Copy optional report.html
       if: ${{ inputs.report != '' }}
+      env:
+        BRANCH: ${{ steps.branch.outputs.branch }}
       shell: bash
       run: |
         set -euo pipefail
-        BRANCH="${{ steps.branch.outputs.branch }}"
         SRC="${{ inputs.report }}"
         if [[ ! -f "$SRC" ]]; then
           echo "Report file not found at: $SRC" >&2
           exit 1
         fi
-        cp -f "$SRC" "coverage/coverage/${BRANCH}/report.html"
+        cp -f "$SRC" "coverage/${BRANCH}/report.html"
 
     - name: Commit & push changes to coverage branch
+      env:
+        BRANCH: ${{ steps.branch.outputs.branch }}
       shell: bash
       run: |
         set -euo pipefail
-        BRANCH="${{ steps.branch.outputs.branch }}"
         pushd coverage >/dev/null
           git config --local user.email "action@github.com"
           git config --local user.name  "GitHub Action"
-          test ! -f "coverage/${BRANCH}/badge.svg"  || git add "coverage/${BRANCH}/badge.svg"
-          test ! -f "coverage/${BRANCH}/report.html" || git add "coverage/${BRANCH}/report.html"
+          test ! -f "${BRANCH}/badge.svg"  || git add "${BRANCH}/badge.svg"
+          test ! -f "${BRANCH}/report.html" || git add "${BRANCH}/report.html"
           if [[ -n "$(git status --porcelain)" ]]; then
             git commit -m "update"
             git push origin HEAD:coverage
@@ -184,12 +189,13 @@ runs:
         popd >/dev/null
 
     - name: Summary
+      env:
+        BRANCH: ${{ steps.branch.outputs.branch }}
       shell: bash
       run: |
         set -euo pipefail
-        BRANCH="${{ steps.branch.outputs.branch }}"
         echo "Published:"
-        echo " - coverage/${BRANCH}/badge.svg"
-        if [[ -f "coverage/coverage/${BRANCH}/report.html" ]]; then
-          echo " - coverage/${BRANCH}/report.html"
+        echo " - ${BRANCH}/badge.svg"
+        if [[ -f "coverage/${BRANCH}/report.html" ]]; then
+          echo " - ${BRANCH}/report.html"
         fi
