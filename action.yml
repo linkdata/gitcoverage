@@ -36,13 +36,30 @@ runs:
         git config --local user.email "action@github.com"
         git config --local user.name  "GitHub Action"
 
-    - name: Detect current branch (handles tag refs via containing branch)
+    - name: Detect current branch (handles tags; fetches tags; robust)
       id: branch
       shell: bash
       run: |
         set -euo pipefail
 
-        # 1) Fast paths: PR source branch or plain branch ref
+        resolve_default_branch() {
+          git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@' || true
+        }
+
+        # --- Ensure we have enough history + refs ---
+        # Make sure 'origin' is set (usually already set by actions/checkout)
+        git remote set-url origin "${GITHUB_SERVER_URL:-https://github.com}/${GITHUB_REPOSITORY}.git" || true
+
+        if git rev-parse --is-shallow-repository >/dev/null 2>&1 && [[ "$(git rev-parse --is-shallow-repository)" == "true" ]]; then
+          # Fully unshallow if possible so --contains works reliably
+          git fetch --prune --tags --unshallow origin || git fetch --prune --tags --depth=1000 origin
+        else
+          git fetch --prune --tags origin
+        fi
+        # Fetch all remote heads so we can query them locally
+        git fetch origin +refs/heads/*:refs/remotes/origin/* --prune
+
+        # --- Fast paths: PR source branch or branch ref ---
         if [[ -n "${GITHUB_HEAD_REF:-}" ]]; then
           BRANCH="${GITHUB_HEAD_REF}"
         elif [[ "${GITHUB_REF_TYPE:-}" == "branch" && -n "${GITHUB_REF_NAME:-}" ]]; then
@@ -51,55 +68,53 @@ runs:
           BRANCH=""
         fi
 
-        # 2) If we're on a tag, resolve the branch that contains this tag
-        if { [[ -z "$BRANCH" ]] && [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; } || [[ "${GITHUB_REF:-}" == refs/tags/* ]]; then
+        # --- Tag path: map tag -> containing branch ---
+        if [[ -z "$BRANCH" ]] && { [[ "${GITHUB_REF_TYPE:-}" == "tag" ]] || [[ "${GITHUB_REF:-}" == refs/tags/* ]]; }; then
           TAG="${GITHUB_REF_NAME:-${GITHUB_REF#refs/tags/}}"
+          TAG_REF="tags/$TAG"
           echo "Ref is a tag (${TAG}); resolving containing branch…"
 
-          # Ensure we have tags and remote branches locally
-          git fetch --tags --force origin || true
-          git fetch origin +refs/heads/*:refs/remotes/origin/* --prune || true
+          # 1) Prefer remote branches that contain the tag commit
+          mapfile -t RMATCHES < <(git branch -r --format "%(refname:short)" --contains "$TAG_REF" 2>/dev/null || true)
+          CANDIDATES=()
+          for r in "${RMATCHES[@]}"; do
+            [[ "$r" == origin/HEAD ]] && continue
+            CANDIDATES+=("${r#origin/}")
+          done
 
-          # Use the requested command for local branches first:
-          #   git branch --format "%(refname:short)" --contains tags/TAG
-          mapfile -t MATCHES < <(git branch --format "%(refname:short)" --contains "tags/$TAG" || true)
-
-          # If nothing locally, check remote branches that contain the tag, then strip "origin/"
-          if [[ ${#MATCHES[@]} -eq 0 ]]; then
-            mapfile -t RMATCHES < <(git branch -r --format "%(refname:short)" --contains "tags/$TAG" || true)
-            MATCHES=()
-            for r in "${RMATCHES[@]}"; do
-              r="${r#origin/}"
-              [[ "$r" == *"HEAD"* ]] && continue
-              MATCHES+=("$r")
+          # 2) If none (common in shallow graphs), pick branches whose TIP == tag commit
+          if [[ ${#CANDIDATES[@]} -eq 0 ]]; then
+            TAG_SHA="$(git rev-list -n1 "$TAG_REF")"
+            mapfile -t ALL_R < <(git for-each-ref --format='%(refname:short)' refs/remotes/origin/)
+            for rb in "${ALL_R[@]}"; do
+              [[ "$rb" == origin/HEAD ]] && continue
+              b="${rb#origin/}"
+              BR_SHA="$(git rev-parse "$rb" 2>/dev/null || true)"
+              [[ -n "$BR_SHA" && "$BR_SHA" == "$TAG_SHA" ]] && CANDIDATES+=("$b")
             done
           fi
 
-          if [[ ${#MATCHES[@]} -gt 0 ]]; then
-            # Prefer remote default branch if present, else 'main'/'master', else first match
-            DEF="$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@' || true)"
-            PICK=""
-            if [[ -n "$DEF" ]]; then
-              for b in "${MATCHES[@]}"; do [[ "$b" == "$DEF" ]] && PICK="$b" && break; done
-            fi
-            if [[ -z "$PICK" ]]; then
-              for pref in main master; do
-                for b in "${MATCHES[@]}"; do [[ "$b" == "$pref" ]] && PICK="$b" && break 2; done
-              done
-            fi
-            BRANCH="${PICK:-${MATCHES[0]}}"
+          # 3) Choose best candidate: origin/HEAD > main/master > first
+          DEF="$(resolve_default_branch)"
+          if [[ -n "$DEF" ]]; then
+            for b in "${CANDIDATES[@]}"; do [[ "$b" == "$DEF" ]] && BRANCH="$b" && break; done
+          fi
+          if [[ -z "$BRANCH" ]]; then
+            for pref in main master; do
+              for b in "${CANDIDATES[@]}"; do [[ "$b" == "$pref" ]] && BRANCH="$b" && break 2; done
+            done
+          fi
+          if [[ -z "$BRANCH" && ${#CANDIDATES[@]} -gt 0 ]]; then
+            BRANCH="${CANDIDATES[0]}"
           fi
         fi
 
-        # 3) Fallbacks if still unknown
-        if [[ -z "$BRANCH" ]]; then
-          BRANCH="$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@' || true)"
+        # --- Last resorts: never return a detached HEAD string ---
+        if [[ -z "$BRANCH" || "$BRANCH" == "HEAD" || "$BRANCH" =~ ^\(.+\)$ ]]; then
+          BRANCH="$(resolve_default_branch)"
         fi
-        if [[ -z "$BRANCH" || "$BRANCH" == "HEAD" ]]; then
-          BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
-        fi
-        if [[ -z "$BRANCH" || "$BRANCH" == "HEAD" ]]; then
-          echo "Could not determine branch name." >&2
+        if [[ -z "$BRANCH" || "$BRANCH" == "HEAD" || "$BRANCH" =~ ^\(.+\)$ ]]; then
+          echo "Could not determine branch (still detached at a tag). Consider actions/checkout with 'fetch-depth: 0'." >&2
           exit 1
         fi
 
