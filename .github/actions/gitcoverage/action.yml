@@ -88,25 +88,26 @@ runs:
         set -euo pipefail
         mkdir -p "coverage/${BRANCH}"
 
-    - name: Parse coverage input and generate SVG badge
+    - name: Parse coverage input and generate SVG badge (variable width, 25% opacity text)
       shell: bash
       env:
         BRANCH: ${{ steps.branch.outputs.branch }}
         INPUT_COVERAGE: ${{ inputs.coverage }}
       run: |
         set -euo pipefail
-        # Trim trailing % and whitespace
+
+        # --- 1) Normalize and validate percentage ---
         RAW="$INPUT_COVERAGE"
         PCT="$(echo "$RAW" | sed 's/[[:space:]]//g; s/%$//')"
-        # Validate numeric (integer or float)
         if ! [[ "$PCT" =~ ^([0-9]+([.][0-9]+)?)$ ]]; then
           echo "Invalid coverage value: '$RAW' (expected a number like 83 or 83%)." >&2
           exit 1
         fi
-        # Clamp to [0,100]
+        # Clamp and standardize to 0..100 with 2 decimals; display as integer
         PCT=$(awk -v v="$PCT" 'BEGIN{ if (v<0) v=0; if (v>100) v=100; printf("%.2f", v) }')
-        # Convert percentage -> hue (0 = red, 120 = green) for smooth red->orange->yellow->green
-        # HSL: h in [0,120], s=1, l=0.4 (nice contrast). Convert to RGB then hex.
+        VALUE="$(printf "%.0f" "$PCT")%"
+
+        # --- 2) Compute color (smooth red->green via HSL) ---
         read R G B HEX < <(awk -v p="$PCT" '
           function hsl2rgb(h,s,l,    c,x,m,r,g,b,R,G,B) {
             c=(1 - ((2*l-1)<0?-(2*l-1):(2*l-1))) * s
@@ -127,13 +128,44 @@ runs:
             h=120.0*(p/100.0); s=1.0; l=0.40;
             print hsl2rgb(h,s,l);
           }')
-        echo "Computed color $HEX for ${PCT}%"
-        # Badge layout (simple, fixed width). Left label black, right value colored.
+
+        # --- 3) Variable width calculation (approx text widths) ---
         LABEL="coverage"
-        VALUE="$(printf "%.0f" "$PCT")%"
-        LEFT_W=76
-        RIGHT_W=66
-        WIDTH=$((LEFT_W+RIGHT_W))
+
+        # crude width table (px) for Verdana/DejaVu Sans at 11px; good enough for badges
+        calc_width() {
+          local s="$1"
+          awk -v s="$s" '
+            BEGIN{
+              # baseline
+              for(i=0;i<=9;i++) w[sprintf("%d",i)]=7
+              w["%"]=8; w["."]=3; w["-"]=5; w["_"]=7; w[" "]=4
+              split("abcdefghijklmnopqrstuvwxyz",a,""); for(i in a) w[a[i]]=7
+              split("ABCDEFGHIJKLMNOPQRSTUVWXYZ",b,""); for(i in b) w[b[i]]=8
+              total=0
+              for(i=1;i<=length(s);i++){
+                ch=substr(s,i,1)
+                if (ch in w) total+=w[ch]; else total+=7
+              }
+              print total
+            }'
+        }
+
+        # paddings for each side
+        PAD_L=6
+        PAD_R=6
+
+        LW=$(calc_width "$LABEL")
+        RW=$(calc_width "$VALUE")
+
+        LEFT_W=$((LW + PAD_L + PAD_R))
+        RIGHT_W=$((RW + PAD_L + PAD_R))
+        WIDTH=$((LEFT_W + RIGHT_W))
+
+        LABEL_X=$(( LEFT_W / 2 ))
+        VALUE_X=$(( LEFT_W + RIGHT_W / 2 ))
+
+        # --- 4) Emit SVG (texts at 25% opacity) ---
         SVG="$(cat <<EOF
         <svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="20" role="img" aria-label="${LABEL}: ${VALUE}">
           <linearGradient id="s" x2="0" y2="100%">
@@ -146,13 +178,14 @@ runs:
             <rect x="${LEFT_W}" width="${RIGHT_W}" height="20" fill="${HEX}"/>
             <rect width="${WIDTH}" height="20" fill="url(#s)"/>
           </g>
-          <g fill="#fff" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
-            <text x="$((LEFT_W/2))" y="15">${LABEL}</text>
-            <text x="$((LEFT_W + RIGHT_W/2))" y="15">${VALUE}</text>
+          <g fill="#fff" opacity="0.25" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
+            <text x="${LABEL_X}" y="15">${LABEL}</text>
+            <text x="${VALUE_X}" y="15">${VALUE}</text>
           </g>
         </svg>
         EOF
         )"
+
         echo "$SVG" > "coverage/${BRANCH}/badge.svg"
 
     - name: Copy optional report.html
