@@ -24,8 +24,6 @@ jobs:
   build:
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: linkdata/gitcoverage@main
         with:
           coverage: "83%"
@@ -48,8 +46,6 @@ jobs:
           - "stable"
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v5
