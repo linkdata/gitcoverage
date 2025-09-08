@@ -72,7 +72,7 @@ runs:
         if [[ -z "$BRANCH" ]] && { [[ "${GITHUB_REF_TYPE:-}" == "tag" ]] || [[ "${GITHUB_REF:-}" == refs/tags/* ]]; }; then
           TAG="${GITHUB_REF_NAME:-${GITHUB_REF#refs/tags/}}"
           TAG_REF="tags/$TAG"
-          echo "Ref is a tag (${TAG}); resolving containing branch…"
+          echo "Ref is a tag (${TAG}); resolving containing branch..."
 
           # 1) Prefer remote branches that contain the tag commit
           mapfile -t RMATCHES < <(git branch -r --format "%(refname:short)" --contains "$TAG_REF" 2>/dev/null || true)
@@ -131,7 +131,7 @@ runs:
         if git ls-remote --exit-code --heads origin coverage >/dev/null 2>&1; then
           echo "'coverage' branch exists."
         else
-          echo "Creating orphan 'coverage' branch…"
+          echo "Creating orphan 'coverage' branch..."
           git checkout "${BRANCH}"
           git checkout --orphan coverage
           # remove index entries (keep working tree)
