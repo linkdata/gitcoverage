@@ -69,7 +69,7 @@ jobs:
           go tool cover -html=coverage.out -o=coveragereport.out
 
       - name: Publish badge (and optional report)
-        uses: ./.github/actions/gitcoverage
+        uses: linkdata/gitcoverage
         with:
           coverage: ${{ steps.coverage.outputs.coverage }}
           report:   "coveragereport.out"
