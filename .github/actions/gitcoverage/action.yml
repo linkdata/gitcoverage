@@ -1,0 +1,195 @@
+# action.yml
+name: "Publish coverage badge"
+description: "Create/update coverage/<branch>/badge.svg (+ optional report.html) on the 'coverage' branch."
+author: "you"
+inputs:
+  coverage:
+    description: "Coverage percentage (e.g. 83 or 83%)"
+    required: true
+  report:
+    description: "Optional path to an HTML coverage report file to publish as report.html"
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: Sanity / git identity
+      shell: bash
+      run: |
+        set -euo pipefail
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+        git config --local user.email "action@github.com"
+        git config --local user.name  "GitHub Action"
+
+    - name: Detect current branch (actual branch, not tag)
+      id: branch
+      shell: bash
+      run: |
+        set -euo pipefail
+        # Prefer PR source branch, then ref_name if it's a branch, else default branch of origin
+        BRANCH="${GITHUB_HEAD_REF:-}"
+        if [[ -z "$BRANCH" ]]; then
+          if [[ "${GITHUB_REF_TYPE:-}" == "branch" && -n "${GITHUB_REF_NAME:-}" ]]; then
+            BRANCH="${GITHUB_REF_NAME}"
+          else
+            # Fallback to remote default branch (origin/HEAD -> refs/remotes/origin/<default>)
+            BRANCH="$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@' || true)"
+          fi
+        fi
+        if [[ -z "$BRANCH" || "$BRANCH" == "HEAD" ]]; then
+          # Ultimate fallback: try current branch name
+          BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+        fi
+        if [[ -z "$BRANCH" || "$BRANCH" == "HEAD" ]]; then
+          echo "Could not determine branch name." >&2
+          exit 1
+        fi
+        echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+
+    - name: Ensure 'coverage' branch exists (create orphan if needed)
+      shell: bash
+      run: |
+        set -euo pipefail
+        BRANCH="${{ steps.branch.outputs.branch }}"
+        # Does 'coverage' branch exist on origin?
+        if git ls-remote --exit-code --heads origin coverage >/dev/null 2>&1; then
+          echo "'coverage' branch exists."
+        else
+          echo "Creating orphan 'coverage' branch…"
+          git checkout "${BRANCH}"
+          git checkout --orphan coverage
+          # remove index entries (keep working tree)
+          if [[ -n "$(git ls-files)" ]]; then
+            git rm --cached $(git ls-files)
+          fi
+          echo '# Coverage branch' > README.md
+          git add README.md
+          git commit -m 'Add README.md'
+          # Push with auth via checkout action's token/remote config
+          git push origin coverage
+          git checkout --force "${BRANCH}"
+        fi
+
+    - name: Check out coverage branch (worktree)
+      shell: bash
+      run: |
+        set -euo pipefail
+        # Use a worktree so we don't disturb current checkout
+        rm -rf coverage
+        git worktree prune || true
+        git worktree add -B coverage coverage origin/coverage
+        echo "Using worktree at ./coverage"
+
+    - name: Prepare coverage/<branch> directory
+      shell: bash
+      run: |
+        set -euo pipefail
+        BRANCH="${{ steps.branch.outputs.branch }}"
+        mkdir -p "coverage/coverage/${BRANCH}"
+
+    - name: Parse coverage input and generate SVG badge
+      shell: bash
+      env:
+        INPUT_COVERAGE: ${{ inputs.coverage }}
+      run: |
+        set -euo pipefail
+        # Trim trailing % and whitespace
+        RAW="$INPUT_COVERAGE"
+        PCT="$(echo "$RAW" | sed 's/[[:space:]]//g; s/%$//')"
+        # Validate numeric (integer or float)
+        if ! [[ "$PCT" =~ ^([0-9]+([.][0-9]+)?)$ ]]; then
+          echo "Invalid coverage value: '$RAW' (expected a number like 83 or 83%)." >&2
+          exit 1
+        fi
+        # Clamp to [0,100]
+        PCT=$(awk -v v="$PCT" 'BEGIN{ if (v<0) v=0; if (v>100) v=100; printf("%.2f", v) }')
+        # Convert percentage -> hue (0 = red, 120 = green) for smooth red->orange->yellow->green
+        # HSL: h in [0,120], s=1, l=0.4 (nice contrast). Convert to RGB then hex.
+        read R G B HEX < <(awk -v p="$PCT" '
+          function hsl2rgb(h,s,l,    c,x,m,r,g,b,R,G,B) {
+            c=(1 - ((2*l-1)<0?-(2*l-1):(2*l-1))) * s
+            hprime=h/60.0
+            x=c*(1 - ((hprime%2)-1<0? -((hprime%2)-1) : ((hprime%2)-1)))
+            if      (0<=hprime && hprime<1){r=c; g=x; b=0}
+            else if (1<=hprime && hprime<2){r=x; g=c; b=0}
+            else if (2<=hprime && hprime<3){r=0; g=c; b=x}
+            else if (3<=hprime && hprime<4){r=0; g=x; b=c}
+            else if (4<=hprime && hprime<5){r=x; g=0; b=c}
+            else if (5<=hprime && hprime<6){r=c; g=0; b=x}
+            else {r=0; g=0; b=0}
+            m=l - c/2.0
+            R=int((r+m)*255+0.5); G=int((g+m)*255+0.5); B=int((b+m)*255+0.5)
+            return sprintf("%d %d %d #%02X%02X%02X", R,G,B,R,G,B)
+          }
+          BEGIN{
+            h=120.0*(p/100.0); s=1.0; l=0.40;
+            print hsl2rgb(h,s,l);
+          }')
+        echo "Computed color $HEX for ${PCT}%"
+        # Badge layout (simple, fixed width). Left label black, right value colored.
+        LABEL="coverage"
+        VALUE="$(printf "%.0f" "$PCT")%"
+        LEFT_W=76
+        RIGHT_W=66
+        WIDTH=$((LEFT_W+RIGHT_W))
+        SVG="$(cat <<EOF
+        <svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="20" role="img" aria-label="${LABEL}: ${VALUE}">
+          <linearGradient id="s" x2="0" y2="100%">
+            <stop offset="0" stop-opacity=".1" stop-color="#EEE"/>
+            <stop offset="1" stop-opacity=".1"/>
+          </linearGradient>
+          <mask id="m"><rect width="${WIDTH}" height="20" rx="3" fill="#fff"/></mask>
+          <g mask="url(#m)">
+            <rect width="${LEFT_W}" height="20" fill="#000"/>
+            <rect x="${LEFT_W}" width="${RIGHT_W}" height="20" fill="${HEX}"/>
+            <rect width="${WIDTH}" height="20" fill="url(#s)"/>
+          </g>
+          <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
+            <text x="$((LEFT_W/2))" y="15">${LABEL}</text>
+            <text x="$((LEFT_W + RIGHT_W/2))" y="15">${VALUE}</text>
+          </g>
+        </svg>
+        EOF
+        )"
+        echo "$SVG" > "coverage/coverage/${{ steps.branch.outputs.branch }}/badge.svg"
+
+    - name: Copy optional report.html
+      if: ${{ inputs.report != '' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        BRANCH="${{ steps.branch.outputs.branch }}"
+        SRC="${{ inputs.report }}"
+        if [[ ! -f "$SRC" ]]; then
+          echo "Report file not found at: $SRC" >&2
+          exit 1
+        fi
+        cp -f "$SRC" "coverage/coverage/${BRANCH}/report.html"
+
+    - name: Commit & push changes to coverage branch
+      shell: bash
+      run: |
+        set -euo pipefail
+        BRANCH="${{ steps.branch.outputs.branch }}"
+        pushd coverage >/dev/null
+          git config --local user.email "action@github.com"
+          git config --local user.name  "GitHub Action"
+          test ! -f "coverage/${BRANCH}/badge.svg"  || git add "coverage/${BRANCH}/badge.svg"
+          test ! -f "coverage/${BRANCH}/report.html" || git add "coverage/${BRANCH}/report.html"
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git commit -m "update"
+            git push origin HEAD:coverage
+          else
+            echo "No changes to commit."
+          fi
+        popd >/dev/null
+
+    - name: Summary
+      shell: bash
+      run: |
+        set -euo pipefail
+        BRANCH="${{ steps.branch.outputs.branch }}"
+        echo "Published:"
+        echo " - coverage/${BRANCH}/badge.svg"
+        if [[ -f "coverage/coverage/${BRANCH}/report.html" ]]; then
+          echo " - coverage/${BRANCH}/report.html"
+        fi
