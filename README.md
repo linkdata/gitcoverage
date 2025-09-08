@@ -1,14 +1,14 @@
 # gitcoverage
 
 Generate code coverage badge and push it and optional HTML report to the 'coverage' branch.
-You need to have given write permissions for the for the workflow.
+You need to have given write permissions for the for the workflow, and to check out using `fetch-depth: 0`.
 Reference the generated badge in your README.md like this:
 
 ```md
 [![coverage](https://github.com/USERNAME/REPO/blob/coverage/BRANCH/badge.svg)](#)
 ```
 
-If you have a detailed HTML report of the coverage (here called report.html), replace the '#' with:
+If you have submitted a detailed HTML report of the coverage to the action, replace the '#' with:
 
 `https://htmlpreview.github.io/?https://github.com/USERNAME/REPO/blob/coverage/BRANCH/report.html`
 
