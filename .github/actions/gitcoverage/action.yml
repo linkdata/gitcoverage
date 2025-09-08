@@ -163,7 +163,9 @@ runs:
         WIDTH=$((LEFT_W + RIGHT_W))
 
         LABEL_X=$(( LEFT_W / 2 ))
+        LABEL_SHADOW_X=$(( LABEL_X + 1 ))
         VALUE_X=$(( LEFT_W + RIGHT_W / 2 ))
+        VALUE_X_SHADOW=$(( VALUE_X + 1 ))
 
         # --- 4) Emit SVG ---
         SVG="$(cat <<EOF
@@ -179,10 +181,10 @@ runs:
             <rect width="${WIDTH}" height="20" fill="url(#s)"/>
           </g>
           <g fill="#fff" text-anchor="start" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
-            <text x="${LABEL_X}+5" y="16" textLength="503" fill="#000" opacity="0.25">${LABEL}</text>
-            <text x="${LABEL_X}-5" y="15" textLength="503">${LABEL}</text>
-            <text x="${VALUE_X}+5" y="16" fill="#000" opacity="0.25">${VALUE}</text>
-            <text x="${VALUE_X}-5" y="15">${VALUE}</text>
+            <text x="${LABEL_X_SHADOW}" y="16" fill="#000" opacity="0.25">${LABEL}</text>
+            <text x="${LABEL_X}" y="15">${LABEL}</text>
+            <text x="${VALUE_X_SHADOW}" y="16" fill="#000" opacity="0.25">${VALUE}</text>
+            <text x="${VALUE_X}" y="15">${VALUE}</text>
           </g>
         </svg>
         EOF
