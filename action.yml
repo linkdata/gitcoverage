@@ -1,7 +1,20 @@
-# action.yml
-name: "Publish coverage badge"
+# Generate code coverage badge and push it to the 'coverage' branch.
+# Reference it in your README.md like this:
+#
+#  [![coverage](https://github.com/USERNAME/REPO/blob/coverage/BRANCH/badge.svg)](#)
+#
+# If you have a detailed HTML report of the coverage (here called report.html), replace the '#' with:
+#
+#  https://htmlpreview.github.io/?https://github.com/USERNAME/REPO/blob/coverage/BRANCH/report.html
+#
+# You need to have given write permissions for the for the workflow:
+#
+#   permissions:
+#     contents: write
+
+name: "gitcoverage"
 description: "Create/update coverage/<branch>/badge.svg (+ optional report.html) on the 'coverage' branch."
-author: "you"
+author: "johan@linkdata.se"
 inputs:
   coverage:
     description: "Coverage percentage (e.g. 83 or 83%)"
