@@ -88,7 +88,7 @@ runs:
         set -euo pipefail
         mkdir -p "coverage/${BRANCH}"
 
-    - name: Parse coverage input and generate SVG badge (variable width, 25% opacity text)
+    - name: Parse coverage input and generate SVG badge
       shell: bash
       env:
         BRANCH: ${{ steps.branch.outputs.branch }}
@@ -165,7 +165,7 @@ runs:
         LABEL_X=$(( LEFT_W / 2 ))
         VALUE_X=$(( LEFT_W + RIGHT_W / 2 ))
 
-        # --- 4) Emit SVG (texts at 25% opacity) ---
+        # --- 4) Emit SVG ---
         SVG="$(cat <<EOF
         <svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="20" role="img" aria-label="${LABEL}: ${VALUE}">
           <linearGradient id="s" x2="0" y2="100%">
@@ -178,9 +178,11 @@ runs:
             <rect x="${LEFT_W}" width="${RIGHT_W}" height="20" fill="${HEX}"/>
             <rect width="${WIDTH}" height="20" fill="url(#s)"/>
           </g>
-          <g fill="#fff" opacity="0.25" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
-            <text x="${LABEL_X}" y="15">${LABEL}</text>
-            <text x="${VALUE_X}" y="15">${VALUE}</text>
+          <g fill="#fff" text-anchor="start" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+            <text x="${LABEL_X}+5" y="16" textLength="503" fill="#000" opacity="0.25">${LABEL}</text>
+            <text x="${LABEL_X}-5" y="15" textLength="503">${LABEL}</text>
+            <text x="${VALUE_X}+5" y="16" fill="#000" opacity="0.25">${VALUE}</text>
+            <text x="${VALUE_X}-5" y="15">${VALUE}</text>
           </g>
         </svg>
         EOF
