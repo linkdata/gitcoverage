@@ -1,4 +1,4 @@
-[![coverage](https://github.com/linkdata/gitcoverage/coverage_badge_animated.svg)](#)
+[![coverage](https://github.com/linkdata/gitcoverage/blob/main/coverage_badge_animated.svg)](#)
 
 # gitcoverage
 
