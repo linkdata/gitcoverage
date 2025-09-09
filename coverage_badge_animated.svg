@@ -1,0 +1,928 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="102" height="20" role="img" aria-label="coverage: animated 0-33-66-100">
+  <defs>
+    <linearGradient id="s" x2="0" y2="100%">
+      <stop offset="0" stop-opacity=".1" stop-color="#EEE"/>
+      <stop offset="1" stop-opacity=".1"/>
+    </linearGradient>
+    <mask id="m"><rect width="102" height="20" rx="3" fill="#fff"/></mask>
+  </defs>
+
+  <g mask="url(#m)">
+    <rect width="68" height="20" fill="#555"/>
+    <g id="rect0" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D60000"/>
+      <set id="tr0" attributeName="display" to="inline" begin="0s; tr100.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect1" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D60300"/>
+      <set id="tr1" attributeName="display" to="inline" begin="tr0.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect2" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D60600"/>
+      <set id="tr2" attributeName="display" to="inline" begin="tr1.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect3" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D60A00"/>
+      <set id="tr3" attributeName="display" to="inline" begin="tr2.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect4" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D60D00"/>
+      <set id="tr4" attributeName="display" to="inline" begin="tr3.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect5" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D61000"/>
+      <set id="tr5" attributeName="display" to="inline" begin="tr4.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect6" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D61300"/>
+      <set id="tr6" attributeName="display" to="inline" begin="tr5.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect7" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D61700"/>
+      <set id="tr7" attributeName="display" to="inline" begin="tr6.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect8" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D61A00"/>
+      <set id="tr8" attributeName="display" to="inline" begin="tr7.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect9" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D61D00"/>
+      <set id="tr9" attributeName="display" to="inline" begin="tr8.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect10" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D62000"/>
+      <set id="tr10" attributeName="display" to="inline" begin="tr9.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect11" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D62400"/>
+      <set id="tr11" attributeName="display" to="inline" begin="tr10.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect12" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D62700"/>
+      <set id="tr12" attributeName="display" to="inline" begin="tr11.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect13" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D62A00"/>
+      <set id="tr13" attributeName="display" to="inline" begin="tr12.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect14" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D62D00"/>
+      <set id="tr14" attributeName="display" to="inline" begin="tr13.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect15" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D63100"/>
+      <set id="tr15" attributeName="display" to="inline" begin="tr14.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect16" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D63400"/>
+      <set id="tr16" attributeName="display" to="inline" begin="tr15.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect17" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D63700"/>
+      <set id="tr17" attributeName="display" to="inline" begin="tr16.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect18" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D63A00"/>
+      <set id="tr18" attributeName="display" to="inline" begin="tr17.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect19" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D63E00"/>
+      <set id="tr19" attributeName="display" to="inline" begin="tr18.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect20" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D64100"/>
+      <set id="tr20" attributeName="display" to="inline" begin="tr19.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect21" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D64400"/>
+      <set id="tr21" attributeName="display" to="inline" begin="tr20.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect22" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D64700"/>
+      <set id="tr22" attributeName="display" to="inline" begin="tr21.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect23" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D64B00"/>
+      <set id="tr23" attributeName="display" to="inline" begin="tr22.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect24" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D64E00"/>
+      <set id="tr24" attributeName="display" to="inline" begin="tr23.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect25" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D65100"/>
+      <set id="tr25" attributeName="display" to="inline" begin="tr24.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect26" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D65400"/>
+      <set id="tr26" attributeName="display" to="inline" begin="tr25.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect27" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D65800"/>
+      <set id="tr27" attributeName="display" to="inline" begin="tr26.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect28" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D65B00"/>
+      <set id="tr28" attributeName="display" to="inline" begin="tr27.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect29" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D65E00"/>
+      <set id="tr29" attributeName="display" to="inline" begin="tr28.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect30" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D66100"/>
+      <set id="tr30" attributeName="display" to="inline" begin="tr29.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect31" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D66500"/>
+      <set id="tr31" attributeName="display" to="inline" begin="tr30.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect32" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D66800"/>
+      <set id="tr32" attributeName="display" to="inline" begin="tr31.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect33" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D66B00"/>
+      <set id="tr33" attributeName="display" to="inline" begin="tr32.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect34" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D66E00"/>
+      <set id="tr34" attributeName="display" to="inline" begin="tr33.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect35" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D67200"/>
+      <set id="tr35" attributeName="display" to="inline" begin="tr34.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect36" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D67500"/>
+      <set id="tr36" attributeName="display" to="inline" begin="tr35.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect37" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D67800"/>
+      <set id="tr37" attributeName="display" to="inline" begin="tr36.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect38" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D67B00"/>
+      <set id="tr38" attributeName="display" to="inline" begin="tr37.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect39" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D67F00"/>
+      <set id="tr39" attributeName="display" to="inline" begin="tr38.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect40" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D68200"/>
+      <set id="tr40" attributeName="display" to="inline" begin="tr39.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect41" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D68500"/>
+      <set id="tr41" attributeName="display" to="inline" begin="tr40.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect42" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D68800"/>
+      <set id="tr42" attributeName="display" to="inline" begin="tr41.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect43" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D68C00"/>
+      <set id="tr43" attributeName="display" to="inline" begin="tr42.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect44" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D68F00"/>
+      <set id="tr44" attributeName="display" to="inline" begin="tr43.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect45" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D69200"/>
+      <set id="tr45" attributeName="display" to="inline" begin="tr44.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect46" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D69500"/>
+      <set id="tr46" attributeName="display" to="inline" begin="tr45.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect47" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D69900"/>
+      <set id="tr47" attributeName="display" to="inline" begin="tr46.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect48" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D69C00"/>
+      <set id="tr48" attributeName="display" to="inline" begin="tr47.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect49" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D69F00"/>
+      <set id="tr49" attributeName="display" to="inline" begin="tr48.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect50" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D6A200"/>
+      <set id="tr50" attributeName="display" to="inline" begin="tr49.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect51" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D6A600"/>
+      <set id="tr51" attributeName="display" to="inline" begin="tr50.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect52" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D6A900"/>
+      <set id="tr52" attributeName="display" to="inline" begin="tr51.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect53" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D6AC00"/>
+      <set id="tr53" attributeName="display" to="inline" begin="tr52.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect54" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D6AF00"/>
+      <set id="tr54" attributeName="display" to="inline" begin="tr53.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect55" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D6B200"/>
+      <set id="tr55" attributeName="display" to="inline" begin="tr54.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect56" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D6B600"/>
+      <set id="tr56" attributeName="display" to="inline" begin="tr55.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect57" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D6B900"/>
+      <set id="tr57" attributeName="display" to="inline" begin="tr56.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect58" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D6BC00"/>
+      <set id="tr58" attributeName="display" to="inline" begin="tr57.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect59" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D6BF00"/>
+      <set id="tr59" attributeName="display" to="inline" begin="tr58.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect60" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D6C300"/>
+      <set id="tr60" attributeName="display" to="inline" begin="tr59.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect61" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D6C600"/>
+      <set id="tr61" attributeName="display" to="inline" begin="tr60.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect62" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D6C900"/>
+      <set id="tr62" attributeName="display" to="inline" begin="tr61.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect63" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D6CC00"/>
+      <set id="tr63" attributeName="display" to="inline" begin="tr62.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect64" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D6D000"/>
+      <set id="tr64" attributeName="display" to="inline" begin="tr63.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect65" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D6D300"/>
+      <set id="tr65" attributeName="display" to="inline" begin="tr64.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect66" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D6D600"/>
+      <set id="tr66" attributeName="display" to="inline" begin="tr65.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect67" style="display:none">
+      <rect x="68" width="34" height="20" fill="#D0D600"/>
+      <set id="tr67" attributeName="display" to="inline" begin="tr66.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect68" style="display:none">
+      <rect x="68" width="34" height="20" fill="#CAD600"/>
+      <set id="tr68" attributeName="display" to="inline" begin="tr67.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect69" style="display:none">
+      <rect x="68" width="34" height="20" fill="#C3D600"/>
+      <set id="tr69" attributeName="display" to="inline" begin="tr68.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect70" style="display:none">
+      <rect x="68" width="34" height="20" fill="#BDD600"/>
+      <set id="tr70" attributeName="display" to="inline" begin="tr69.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect71" style="display:none">
+      <rect x="68" width="34" height="20" fill="#B7D600"/>
+      <set id="tr71" attributeName="display" to="inline" begin="tr70.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect72" style="display:none">
+      <rect x="68" width="34" height="20" fill="#B0D600"/>
+      <set id="tr72" attributeName="display" to="inline" begin="tr71.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect73" style="display:none">
+      <rect x="68" width="34" height="20" fill="#AAD600"/>
+      <set id="tr73" attributeName="display" to="inline" begin="tr72.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect74" style="display:none">
+      <rect x="68" width="34" height="20" fill="#A4D600"/>
+      <set id="tr74" attributeName="display" to="inline" begin="tr73.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect75" style="display:none">
+      <rect x="68" width="34" height="20" fill="#9ED600"/>
+      <set id="tr75" attributeName="display" to="inline" begin="tr74.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect76" style="display:none">
+      <rect x="68" width="34" height="20" fill="#97D600"/>
+      <set id="tr76" attributeName="display" to="inline" begin="tr75.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect77" style="display:none">
+      <rect x="68" width="34" height="20" fill="#91D600"/>
+      <set id="tr77" attributeName="display" to="inline" begin="tr76.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect78" style="display:none">
+      <rect x="68" width="34" height="20" fill="#8BD600"/>
+      <set id="tr78" attributeName="display" to="inline" begin="tr77.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect79" style="display:none">
+      <rect x="68" width="34" height="20" fill="#84D600"/>
+      <set id="tr79" attributeName="display" to="inline" begin="tr78.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect80" style="display:none">
+      <rect x="68" width="34" height="20" fill="#7ED600"/>
+      <set id="tr80" attributeName="display" to="inline" begin="tr79.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect81" style="display:none">
+      <rect x="68" width="34" height="20" fill="#78D600"/>
+      <set id="tr81" attributeName="display" to="inline" begin="tr80.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect82" style="display:none">
+      <rect x="68" width="34" height="20" fill="#71D600"/>
+      <set id="tr82" attributeName="display" to="inline" begin="tr81.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect83" style="display:none">
+      <rect x="68" width="34" height="20" fill="#6BD600"/>
+      <set id="tr83" attributeName="display" to="inline" begin="tr82.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect84" style="display:none">
+      <rect x="68" width="34" height="20" fill="#65D600"/>
+      <set id="tr84" attributeName="display" to="inline" begin="tr83.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect85" style="display:none">
+      <rect x="68" width="34" height="20" fill="#5ED600"/>
+      <set id="tr85" attributeName="display" to="inline" begin="tr84.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect86" style="display:none">
+      <rect x="68" width="34" height="20" fill="#58D600"/>
+      <set id="tr86" attributeName="display" to="inline" begin="tr85.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect87" style="display:none">
+      <rect x="68" width="34" height="20" fill="#52D600"/>
+      <set id="tr87" attributeName="display" to="inline" begin="tr86.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect88" style="display:none">
+      <rect x="68" width="34" height="20" fill="#4CD600"/>
+      <set id="tr88" attributeName="display" to="inline" begin="tr87.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect89" style="display:none">
+      <rect x="68" width="34" height="20" fill="#45D600"/>
+      <set id="tr89" attributeName="display" to="inline" begin="tr88.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect90" style="display:none">
+      <rect x="68" width="34" height="20" fill="#3FD600"/>
+      <set id="tr90" attributeName="display" to="inline" begin="tr89.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect91" style="display:none">
+      <rect x="68" width="34" height="20" fill="#39D600"/>
+      <set id="tr91" attributeName="display" to="inline" begin="tr90.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect92" style="display:none">
+      <rect x="68" width="34" height="20" fill="#32D600"/>
+      <set id="tr92" attributeName="display" to="inline" begin="tr91.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect93" style="display:none">
+      <rect x="68" width="34" height="20" fill="#2CD600"/>
+      <set id="tr93" attributeName="display" to="inline" begin="tr92.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect94" style="display:none">
+      <rect x="68" width="34" height="20" fill="#26D600"/>
+      <set id="tr94" attributeName="display" to="inline" begin="tr93.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect95" style="display:none">
+      <rect x="68" width="34" height="20" fill="#20D600"/>
+      <set id="tr95" attributeName="display" to="inline" begin="tr94.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect96" style="display:none">
+      <rect x="68" width="34" height="20" fill="#19D600"/>
+      <set id="tr96" attributeName="display" to="inline" begin="tr95.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect97" style="display:none">
+      <rect x="68" width="34" height="20" fill="#13D600"/>
+      <set id="tr97" attributeName="display" to="inline" begin="tr96.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect98" style="display:none">
+      <rect x="68" width="34" height="20" fill="#0DD600"/>
+      <set id="tr98" attributeName="display" to="inline" begin="tr97.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect99" style="display:none">
+      <rect x="68" width="34" height="20" fill="#06D600"/>
+      <set id="tr99" attributeName="display" to="inline" begin="tr98.end" dur="0.05s" fill="remove"/>
+    </g>
+    <g id="rect100" style="display:none">
+      <rect x="68" width="34" height="20" fill="#00D600"/>
+      <set id="tr100" attributeName="display" to="inline" begin="tr99.end" dur="0.05s" fill="remove"/>
+    </g>
+    <rect width="102" height="20" fill="url(#s)"/>
+  </g>
+
+  <g fill="#fff" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="35" y="15" fill="#000" opacity="0.25">coverage</text>
+    <text x="34" y="14">coverage</text>
+  </g>
+  <g id="txt0" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">0%</text>
+    <text x="85" y="14" fill="#fff">0%</text>
+    <set attributeName="display" to="inline" begin="tr0.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt1" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">1%</text>
+    <text x="85" y="14" fill="#fff">1%</text>
+    <set attributeName="display" to="inline" begin="tr1.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt2" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">2%</text>
+    <text x="85" y="14" fill="#fff">2%</text>
+    <set attributeName="display" to="inline" begin="tr2.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt3" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">3%</text>
+    <text x="85" y="14" fill="#fff">3%</text>
+    <set attributeName="display" to="inline" begin="tr3.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt4" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">4%</text>
+    <text x="85" y="14" fill="#fff">4%</text>
+    <set attributeName="display" to="inline" begin="tr4.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt5" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">5%</text>
+    <text x="85" y="14" fill="#fff">5%</text>
+    <set attributeName="display" to="inline" begin="tr5.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt6" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">6%</text>
+    <text x="85" y="14" fill="#fff">6%</text>
+    <set attributeName="display" to="inline" begin="tr6.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt7" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">7%</text>
+    <text x="85" y="14" fill="#fff">7%</text>
+    <set attributeName="display" to="inline" begin="tr7.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt8" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">8%</text>
+    <text x="85" y="14" fill="#fff">8%</text>
+    <set attributeName="display" to="inline" begin="tr8.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt9" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">9%</text>
+    <text x="85" y="14" fill="#fff">9%</text>
+    <set attributeName="display" to="inline" begin="tr9.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt10" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">10%</text>
+    <text x="85" y="14" fill="#fff">10%</text>
+    <set attributeName="display" to="inline" begin="tr10.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt11" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">11%</text>
+    <text x="85" y="14" fill="#fff">11%</text>
+    <set attributeName="display" to="inline" begin="tr11.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt12" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">12%</text>
+    <text x="85" y="14" fill="#fff">12%</text>
+    <set attributeName="display" to="inline" begin="tr12.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt13" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">13%</text>
+    <text x="85" y="14" fill="#fff">13%</text>
+    <set attributeName="display" to="inline" begin="tr13.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt14" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">14%</text>
+    <text x="85" y="14" fill="#fff">14%</text>
+    <set attributeName="display" to="inline" begin="tr14.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt15" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">15%</text>
+    <text x="85" y="14" fill="#fff">15%</text>
+    <set attributeName="display" to="inline" begin="tr15.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt16" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">16%</text>
+    <text x="85" y="14" fill="#fff">16%</text>
+    <set attributeName="display" to="inline" begin="tr16.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt17" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">17%</text>
+    <text x="85" y="14" fill="#fff">17%</text>
+    <set attributeName="display" to="inline" begin="tr17.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt18" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">18%</text>
+    <text x="85" y="14" fill="#fff">18%</text>
+    <set attributeName="display" to="inline" begin="tr18.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt19" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">19%</text>
+    <text x="85" y="14" fill="#fff">19%</text>
+    <set attributeName="display" to="inline" begin="tr19.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt20" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">20%</text>
+    <text x="85" y="14" fill="#fff">20%</text>
+    <set attributeName="display" to="inline" begin="tr20.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt21" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">21%</text>
+    <text x="85" y="14" fill="#fff">21%</text>
+    <set attributeName="display" to="inline" begin="tr21.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt22" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">22%</text>
+    <text x="85" y="14" fill="#fff">22%</text>
+    <set attributeName="display" to="inline" begin="tr22.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt23" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">23%</text>
+    <text x="85" y="14" fill="#fff">23%</text>
+    <set attributeName="display" to="inline" begin="tr23.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt24" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">24%</text>
+    <text x="85" y="14" fill="#fff">24%</text>
+    <set attributeName="display" to="inline" begin="tr24.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt25" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">25%</text>
+    <text x="85" y="14" fill="#fff">25%</text>
+    <set attributeName="display" to="inline" begin="tr25.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt26" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">26%</text>
+    <text x="85" y="14" fill="#fff">26%</text>
+    <set attributeName="display" to="inline" begin="tr26.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt27" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">27%</text>
+    <text x="85" y="14" fill="#fff">27%</text>
+    <set attributeName="display" to="inline" begin="tr27.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt28" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">28%</text>
+    <text x="85" y="14" fill="#fff">28%</text>
+    <set attributeName="display" to="inline" begin="tr28.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt29" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">29%</text>
+    <text x="85" y="14" fill="#fff">29%</text>
+    <set attributeName="display" to="inline" begin="tr29.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt30" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">30%</text>
+    <text x="85" y="14" fill="#fff">30%</text>
+    <set attributeName="display" to="inline" begin="tr30.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt31" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">31%</text>
+    <text x="85" y="14" fill="#fff">31%</text>
+    <set attributeName="display" to="inline" begin="tr31.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt32" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">32%</text>
+    <text x="85" y="14" fill="#fff">32%</text>
+    <set attributeName="display" to="inline" begin="tr32.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt33" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">33%</text>
+    <text x="85" y="14" fill="#fff">33%</text>
+    <set attributeName="display" to="inline" begin="tr33.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt34" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">34%</text>
+    <text x="85" y="14" fill="#fff">34%</text>
+    <set attributeName="display" to="inline" begin="tr34.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt35" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">35%</text>
+    <text x="85" y="14" fill="#fff">35%</text>
+    <set attributeName="display" to="inline" begin="tr35.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt36" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">36%</text>
+    <text x="85" y="14" fill="#fff">36%</text>
+    <set attributeName="display" to="inline" begin="tr36.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt37" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">37%</text>
+    <text x="85" y="14" fill="#fff">37%</text>
+    <set attributeName="display" to="inline" begin="tr37.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt38" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">38%</text>
+    <text x="85" y="14" fill="#fff">38%</text>
+    <set attributeName="display" to="inline" begin="tr38.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt39" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">39%</text>
+    <text x="85" y="14" fill="#fff">39%</text>
+    <set attributeName="display" to="inline" begin="tr39.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt40" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">40%</text>
+    <text x="85" y="14" fill="#fff">40%</text>
+    <set attributeName="display" to="inline" begin="tr40.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt41" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">41%</text>
+    <text x="85" y="14" fill="#fff">41%</text>
+    <set attributeName="display" to="inline" begin="tr41.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt42" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">42%</text>
+    <text x="85" y="14" fill="#fff">42%</text>
+    <set attributeName="display" to="inline" begin="tr42.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt43" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">43%</text>
+    <text x="85" y="14" fill="#fff">43%</text>
+    <set attributeName="display" to="inline" begin="tr43.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt44" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">44%</text>
+    <text x="85" y="14" fill="#fff">44%</text>
+    <set attributeName="display" to="inline" begin="tr44.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt45" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">45%</text>
+    <text x="85" y="14" fill="#fff">45%</text>
+    <set attributeName="display" to="inline" begin="tr45.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt46" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">46%</text>
+    <text x="85" y="14" fill="#fff">46%</text>
+    <set attributeName="display" to="inline" begin="tr46.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt47" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">47%</text>
+    <text x="85" y="14" fill="#fff">47%</text>
+    <set attributeName="display" to="inline" begin="tr47.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt48" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">48%</text>
+    <text x="85" y="14" fill="#fff">48%</text>
+    <set attributeName="display" to="inline" begin="tr48.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt49" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">49%</text>
+    <text x="85" y="14" fill="#fff">49%</text>
+    <set attributeName="display" to="inline" begin="tr49.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt50" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">50%</text>
+    <text x="85" y="14" fill="#fff">50%</text>
+    <set attributeName="display" to="inline" begin="tr50.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt51" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">51%</text>
+    <text x="85" y="14" fill="#fff">51%</text>
+    <set attributeName="display" to="inline" begin="tr51.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt52" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">52%</text>
+    <text x="85" y="14" fill="#fff">52%</text>
+    <set attributeName="display" to="inline" begin="tr52.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt53" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">53%</text>
+    <text x="85" y="14" fill="#fff">53%</text>
+    <set attributeName="display" to="inline" begin="tr53.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt54" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">54%</text>
+    <text x="85" y="14" fill="#fff">54%</text>
+    <set attributeName="display" to="inline" begin="tr54.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt55" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">55%</text>
+    <text x="85" y="14" fill="#fff">55%</text>
+    <set attributeName="display" to="inline" begin="tr55.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt56" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">56%</text>
+    <text x="85" y="14" fill="#fff">56%</text>
+    <set attributeName="display" to="inline" begin="tr56.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt57" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">57%</text>
+    <text x="85" y="14" fill="#fff">57%</text>
+    <set attributeName="display" to="inline" begin="tr57.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt58" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">58%</text>
+    <text x="85" y="14" fill="#fff">58%</text>
+    <set attributeName="display" to="inline" begin="tr58.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt59" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">59%</text>
+    <text x="85" y="14" fill="#fff">59%</text>
+    <set attributeName="display" to="inline" begin="tr59.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt60" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">60%</text>
+    <text x="85" y="14" fill="#fff">60%</text>
+    <set attributeName="display" to="inline" begin="tr60.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt61" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">61%</text>
+    <text x="85" y="14" fill="#fff">61%</text>
+    <set attributeName="display" to="inline" begin="tr61.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt62" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">62%</text>
+    <text x="85" y="14" fill="#fff">62%</text>
+    <set attributeName="display" to="inline" begin="tr62.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt63" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">63%</text>
+    <text x="85" y="14" fill="#fff">63%</text>
+    <set attributeName="display" to="inline" begin="tr63.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt64" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">64%</text>
+    <text x="85" y="14" fill="#fff">64%</text>
+    <set attributeName="display" to="inline" begin="tr64.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt65" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">65%</text>
+    <text x="85" y="14" fill="#fff">65%</text>
+    <set attributeName="display" to="inline" begin="tr65.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt66" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">66%</text>
+    <text x="85" y="14" fill="#fff">66%</text>
+    <set attributeName="display" to="inline" begin="tr66.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt67" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">67%</text>
+    <text x="85" y="14" fill="#fff">67%</text>
+    <set attributeName="display" to="inline" begin="tr67.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt68" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">68%</text>
+    <text x="85" y="14" fill="#fff">68%</text>
+    <set attributeName="display" to="inline" begin="tr68.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt69" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">69%</text>
+    <text x="85" y="14" fill="#fff">69%</text>
+    <set attributeName="display" to="inline" begin="tr69.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt70" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">70%</text>
+    <text x="85" y="14" fill="#fff">70%</text>
+    <set attributeName="display" to="inline" begin="tr70.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt71" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">71%</text>
+    <text x="85" y="14" fill="#fff">71%</text>
+    <set attributeName="display" to="inline" begin="tr71.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt72" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">72%</text>
+    <text x="85" y="14" fill="#fff">72%</text>
+    <set attributeName="display" to="inline" begin="tr72.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt73" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">73%</text>
+    <text x="85" y="14" fill="#fff">73%</text>
+    <set attributeName="display" to="inline" begin="tr73.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt74" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">74%</text>
+    <text x="85" y="14" fill="#fff">74%</text>
+    <set attributeName="display" to="inline" begin="tr74.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt75" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">75%</text>
+    <text x="85" y="14" fill="#fff">75%</text>
+    <set attributeName="display" to="inline" begin="tr75.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt76" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">76%</text>
+    <text x="85" y="14" fill="#fff">76%</text>
+    <set attributeName="display" to="inline" begin="tr76.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt77" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">77%</text>
+    <text x="85" y="14" fill="#fff">77%</text>
+    <set attributeName="display" to="inline" begin="tr77.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt78" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">78%</text>
+    <text x="85" y="14" fill="#fff">78%</text>
+    <set attributeName="display" to="inline" begin="tr78.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt79" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">79%</text>
+    <text x="85" y="14" fill="#fff">79%</text>
+    <set attributeName="display" to="inline" begin="tr79.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt80" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">80%</text>
+    <text x="85" y="14" fill="#fff">80%</text>
+    <set attributeName="display" to="inline" begin="tr80.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt81" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">81%</text>
+    <text x="85" y="14" fill="#fff">81%</text>
+    <set attributeName="display" to="inline" begin="tr81.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt82" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">82%</text>
+    <text x="85" y="14" fill="#fff">82%</text>
+    <set attributeName="display" to="inline" begin="tr82.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt83" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">83%</text>
+    <text x="85" y="14" fill="#fff">83%</text>
+    <set attributeName="display" to="inline" begin="tr83.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt84" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">84%</text>
+    <text x="85" y="14" fill="#fff">84%</text>
+    <set attributeName="display" to="inline" begin="tr84.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt85" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">85%</text>
+    <text x="85" y="14" fill="#fff">85%</text>
+    <set attributeName="display" to="inline" begin="tr85.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt86" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">86%</text>
+    <text x="85" y="14" fill="#fff">86%</text>
+    <set attributeName="display" to="inline" begin="tr86.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt87" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">87%</text>
+    <text x="85" y="14" fill="#fff">87%</text>
+    <set attributeName="display" to="inline" begin="tr87.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt88" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">88%</text>
+    <text x="85" y="14" fill="#fff">88%</text>
+    <set attributeName="display" to="inline" begin="tr88.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt89" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">89%</text>
+    <text x="85" y="14" fill="#fff">89%</text>
+    <set attributeName="display" to="inline" begin="tr89.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt90" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">90%</text>
+    <text x="85" y="14" fill="#fff">90%</text>
+    <set attributeName="display" to="inline" begin="tr90.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt91" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">91%</text>
+    <text x="85" y="14" fill="#fff">91%</text>
+    <set attributeName="display" to="inline" begin="tr91.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt92" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">92%</text>
+    <text x="85" y="14" fill="#fff">92%</text>
+    <set attributeName="display" to="inline" begin="tr92.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt93" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">93%</text>
+    <text x="85" y="14" fill="#fff">93%</text>
+    <set attributeName="display" to="inline" begin="tr93.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt94" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">94%</text>
+    <text x="85" y="14" fill="#fff">94%</text>
+    <set attributeName="display" to="inline" begin="tr94.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt95" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">95%</text>
+    <text x="85" y="14" fill="#fff">95%</text>
+    <set attributeName="display" to="inline" begin="tr95.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt96" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">96%</text>
+    <text x="85" y="14" fill="#fff">96%</text>
+    <set attributeName="display" to="inline" begin="tr96.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt97" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">97%</text>
+    <text x="85" y="14" fill="#fff">97%</text>
+    <set attributeName="display" to="inline" begin="tr97.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt98" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">98%</text>
+    <text x="85" y="14" fill="#fff">98%</text>
+    <set attributeName="display" to="inline" begin="tr98.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt99" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">99%</text>
+    <text x="85" y="14" fill="#fff">99%</text>
+    <set attributeName="display" to="inline" begin="tr99.begin" dur="0.05s" fill="remove"/>
+  </g>
+  <g id="txt100" style="display:none" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+    <text x="86" y="15" fill="#000" opacity="0.25">100%</text>
+    <text x="85" y="14" fill="#fff">100%</text>
+    <set attributeName="display" to="inline" begin="tr100.begin" dur="0.05s" fill="remove"/>
+  </g>
+</svg>

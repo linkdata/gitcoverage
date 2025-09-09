@@ -1,3 +1,5 @@
+[![coverage](https://github.com/linkdata/gitcoverage/coverage_badge_animated.svg)](#)
+
 # gitcoverage
 
 Generate code coverage badge and push it and optional HTML report to the 'coverage' branch.
@@ -11,7 +13,7 @@ Reference the generated badge in your README.md like this:
 
 If you have submitted a detailed HTML report of the coverage to the action, replace the '#' with:
 
-`https://htmlpreview.github.io/?https://github.com/USERNAME/REPO/blob/coverage/BRANCH/report.html`
+`https://htmlpreview.github.io/?https://github.com/USERNAME/REPO/blob/coverage/BRANCH/REPORTFILENAME`
 
 # Examples
 
@@ -28,7 +30,7 @@ jobs:
       - uses: linkdata/gitcoverage@main
         with:
           coverage: "83%"
-          report:   "coveragereport.out"
+          report:   "coveragereport.html.out"
 ```
 
 More complete example using Go:
@@ -63,11 +65,11 @@ jobs:
         id: coverage
         run: |
           echo "COVERAGE=$(go tool cover -func=coverage.out | tail -n 1 | tr -s '\t' | cut -f 3)" >> $GITHUB_OUTPUT
-          go tool cover -html=coverage.out -o=coveragereport.out
+          go tool cover -html=coverage.out -o=coveragereport.html.out
 
       - name: Publish badge (and optional report)
         uses: linkdata/gitcoverage@main
         with:
           coverage: ${{ steps.coverage.outputs.coverage }}
-          report:   "coveragereport.out"
+          report:   "coveragereport.html.out"
 ```

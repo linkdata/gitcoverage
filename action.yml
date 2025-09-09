@@ -3,7 +3,7 @@
 #
 #  [![coverage](https://github.com/USERNAME/REPO/blob/coverage/BRANCH/badge.svg)](#)
 #
-# If you have a detailed HTML report of the coverage (here called report.html), replace the '#' with:
+# If you submitted a detailed HTML report of the coverage, replace the '#' with:
 #
 #  https://htmlpreview.github.io/?https://github.com/USERNAME/REPO/blob/coverage/BRANCH/report.html
 #
@@ -183,11 +183,9 @@ runs:
         PCT=$(awk -v v="$PCT" 'BEGIN{ if (v<0) v=0; if (v>100) v=100; printf("%.2f", v) }')
         VALUE="$(printf "%.0f" "$PCT")%"
 
-        # --- 2) Compute color with discrete thresholds and late green ---
-        # <25% = red, <50% = orange, <75% = yellow, 75-<100 = yellow→(not quite) green,
-        # and fully green ONLY at 100%.
+        # --- 2) Compute color with 0->33->66->100 anchors (smooth) ---
         read HEX < <(awk -v p="$PCT" '
-          function hsl2hex(h,s,l,    c,x,m,r,g,b,R,G,B) {
+          function hsl2hex(h,s,l,   c,x,m,r,g,b,R,G,B) {
             c=(1 - ((2*l-1)<0?-(2*l-1):(2*l-1))) * s
             hprime=h/60.0
             x=c*(1 - ((hprime%2)-1<0? -((hprime%2)-1) : ((hprime%2)-1)))
@@ -202,23 +200,21 @@ runs:
             R=int((r+m)*255+0.5); G=int((g+m)*255+0.5); B=int((b+m)*255+0.5)
             return sprintf("#%02X%02X%02X", R,G,B)
           }
+          function lerp(a,b,t){ return a + (b-a)*t }
           BEGIN{
-            # Pick base hues for the bins (H in degrees): red=0, orange~30, yellow=60, green=120
-            # Keep saturation high; lightness ~0.40 - 0.45 for contrast on dark/colored backgrounds.
-            if (p < 25) {
-              h=0;   s=1.0; l=0.40;                      # red
-            } else if (p < 50) {
-              h=30;  s=1.0; l=0.45;                      # orange
-            } else if (p < 75) {
-              h=60;  s=1.0; l=0.45;                      # yellow
+            # Hue anchors (deg): 0=red, 30=orange, 60=yellow, 120=green
+            if (p <= 33) {
+              h = lerp(0,   30,  p/33.0)
+            } else if (p <= 66) {
+              h = lerp(30,  60, (p-33.0)/33.0)
             } else if (p < 100) {
-              # Interpolate hue from yellow(60) up to almost-green(≈119) as p→100
-              h = 60 + (p-75) * (59.0/25.0);             # 60..119 (never fully 120)
-              s=1.0; l=0.40;
+              h = lerp(60, 120, (p-66.0)/34.0)
             } else {
-              h=120; s=1.0; l=0.40;                      # fully green only at 100%
+              h = 120
             }
-            print hsl2hex(h,s,l);
+            s = 1.0
+            l = 0.42    # constant lightness for smoothness/contrast
+            print hsl2hex(h,s,l)
           }')
         echo "Computed color $HEX for ${PCT}%"
 
