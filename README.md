@@ -33,7 +33,7 @@ jobs:
   build:
     steps:
       - uses: actions/checkout@v4
-      - uses: linkdata/gitcoverage@main
+      - uses: linkdata/gitcoverage@v1
         with:
           coverage: "83%"
           report:   "coveragereport.html.out"
@@ -77,7 +77,7 @@ jobs:
           go tool cover -html=coverage.out -o=coveragereport.html.out
 
       - name: Publish code coverage badge (and optional report)
-        uses: linkdata/gitcoverage@main
+        uses: linkdata/gitcoverage@v1
         with:
           coverage: ${{ steps.coverage.outputs.coverage }}
           report:   "coveragereport.html.out"
