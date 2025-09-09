@@ -55,19 +55,22 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
 
-      - name: Go generate
+      - name: Go Generate
         run: go generate ./...
 
-      - name: Test
+      - name: Go Test
         run: go test -coverprofile=coverage.out ./...
 
-      - name: Coverage
+      - name: Go Build
+        run: go build .
+
+      - name: Calculate code coverage
         id: coverage
         run: |
           echo "COVERAGE=$(go tool cover -func=coverage.out | tail -n 1 | tr -s '\t' | cut -f 3)" >> $GITHUB_OUTPUT
           go tool cover -html=coverage.out -o=coveragereport.html.out
 
-      - name: Publish badge (and optional report)
+      - name: Publish code coverage badge (and optional report)
         uses: linkdata/gitcoverage@main
         with:
           coverage: ${{ steps.coverage.outputs.coverage }}
