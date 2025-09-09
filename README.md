@@ -3,6 +3,12 @@
 # gitcoverage
 
 Generate code coverage badge and push it and optional HTML report to the 'coverage' branch.
+
+This action has no dependencies except for `git`, the `bash` shell and common *nix command line utilities
+`awk`, `sed` and GNU coreutils (`mkdir, cp, rm, ls, cat, echo, printf`).
+
+## Usage
+
 You need to have given write permissions for the for the workflow.
 If the 'coverage' branch does not exist, it will be created as an orphan (without main repo history).
 Reference the generated badge in your README.md like this:
@@ -15,7 +21,7 @@ If you submitted a detailed HTML report of the coverage to the action, replace t
 
 `https://htmlpreview.github.io/?https://github.com/USERNAME/REPO/blob/coverage/BRANCH/report.html`
 
-# Examples
+## Examples
 
 Inside your .github/workflows/workflow.yml file:
 
