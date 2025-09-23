@@ -308,7 +308,29 @@ runs:
           test ! -f "${BRANCH}/report.html" || git add "${BRANCH}/report.html"
           if [[ -n "$(git status --porcelain)" ]]; then
             git commit -m "update"
-            git push origin HEAD:coverage
+
+            max_attempts=5
+            attempt=1
+            while true; do
+              if git push origin HEAD:coverage; then
+                break
+              fi
+
+              if (( attempt >= max_attempts )); then
+                echo "Failed to push coverage branch after ${max_attempts} attempts." >&2
+                exit 1
+              fi
+
+              echo "Push rejected (attempt ${attempt}/${max_attempts}). Refreshing coverage branch..."
+              git fetch origin coverage
+              if ! git rebase origin/coverage; then
+                echo "Rebase failed while updating coverage branch." >&2
+                git rebase --abort || true
+                exit 1
+              fi
+
+              attempt=$(( attempt + 1 ))
+            done
           else
             echo "No changes to commit."
           fi
