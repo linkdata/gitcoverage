@@ -312,7 +312,7 @@ runs:
             max_attempts=5
             attempt=1
             while true; do
-              if git push origin HEAD:coverage; then
+              if git push --force-with-lease=coverage origin HEAD:coverage; then
                 break
               fi
 
@@ -323,12 +323,6 @@ runs:
 
               echo "Push rejected (attempt ${attempt}/${max_attempts}). Refreshing coverage branch..."
               git fetch origin coverage
-              if ! git rebase origin/coverage; then
-                echo "Rebase failed while updating coverage branch." >&2
-                git rebase --abort || true
-                exit 1
-              fi
-
               attempt=$(( attempt + 1 ))
             done
           else
