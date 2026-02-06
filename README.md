@@ -20,7 +20,7 @@ Reference the generated badge in your README.md like this:
 
 If you submitted a detailed HTML report of the coverage to the action, replace the '#' with:
 
-`https://htmlpreview.github.io/?https://github.com/USERNAME/REPO/blob/coverage/BRANCH/report.html`
+`https://html-preview.github.io/?url=https://github.com/USERNAME/REPO/blob/coverage/BRANCH/report.html`
 
 ## Examples
 
