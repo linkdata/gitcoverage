@@ -483,3 +483,14 @@ runs:
         if [[ -f "${WORKTREE_DIR}/${BRANCH}/report.html" ]]; then
           echo " - ${BRANCH}/report.html"
         fi
+
+    - name: Cleanup worktree
+      if: ${{ always() }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        if [[ -n "${WORKTREE_DIR:-}" ]]; then
+          git worktree remove --force "$WORKTREE_DIR" >/dev/null 2>&1 || true
+          rm -rf -- "$WORKTREE_DIR" || true
+        fi
+        git worktree prune || true
