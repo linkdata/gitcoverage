@@ -217,45 +217,49 @@ runs:
           echo "'coverage' branch exists."
         else
           echo "Creating orphan 'coverage' branch..."
-          SAVE_REF="$(git symbolic-ref -q --short HEAD || true)"
-          SAVE_SHA="$(git rev-parse --verify HEAD)"
-          NEED_RESTORE=1
-          restore_ref() {
+          if [[ -n "${RUNNER_TEMP:-}" ]]; then
+            BOOTSTRAP_DIR="$(mktemp -d "${RUNNER_TEMP}/gitcoverage-bootstrap.XXXXXX")"
+          else
+            BOOTSTRAP_DIR="$(mktemp -d "${PWD}/.gitcoverage-bootstrap.XXXXXX")"
+          fi
+
+          NEED_CLEANUP=1
+          cleanup_bootstrap() {
             local rc=$?
-            if [[ "$NEED_RESTORE" == "1" ]]; then
-              if [[ -n "$SAVE_REF" ]]; then
-                git checkout --force "$SAVE_REF" || git checkout --force --detach "$SAVE_SHA" || true
-              else
-                git checkout --force --detach "$SAVE_SHA" || true
-              fi
-              NEED_RESTORE=0
+            if [[ "$NEED_CLEANUP" == "1" ]]; then
+              git worktree remove --force "$BOOTSTRAP_DIR" >/dev/null 2>&1 || true
+              rm -rf -- "$BOOTSTRAP_DIR" || true
+              NEED_CLEANUP=0
             fi
             return "$rc"
           }
-          trap restore_ref EXIT
-          git checkout --orphan coverage
-          # Remove index entries (keep working tree) in a filename-safe way.
-          while IFS= read -r -d '' path; do
-            git rm --cached -- "$path"
-          done < <(git ls-files -z)
-          echo '# Coverage branch' > README.md
-          git add README.md
-          git commit -m 'Add README.md'
-          # Push with auth via checkout action's token/remote config.
-          # If another concurrent run creates 'coverage' first, treat that as success.
-          if git push origin coverage; then
-            echo "Created 'coverage' branch."
-          else
-            echo "Initial push failed; checking whether 'coverage' was created concurrently..."
-            git fetch origin +refs/heads/coverage:refs/remotes/origin/coverage >/dev/null 2>&1 || true
-            if git ls-remote --exit-code --heads origin coverage >/dev/null 2>&1; then
-              echo "'coverage' branch was created by another run."
+          trap cleanup_bootstrap EXIT
+
+          # Isolate bootstrap work from the caller's checkout to handle dirty tracked files safely.
+          git worktree add --detach "$BOOTSTRAP_DIR" HEAD
+          pushd "$BOOTSTRAP_DIR" >/dev/null
+            git checkout --orphan coverage
+            git rm -rf --cached . >/dev/null 2>&1 || true
+            echo '# Coverage branch' > README.md
+            git add README.md
+            git commit -m 'Add README.md'
+            # Push with auth via checkout action's token/remote config.
+            # If another concurrent run creates 'coverage' first, treat that as success.
+            if git push origin coverage; then
+              echo "Created 'coverage' branch."
             else
-              echo "Failed to create 'coverage' branch." >&2
-              exit 1
+              echo "Initial push failed; checking whether 'coverage' was created concurrently..."
+              git fetch origin +refs/heads/coverage:refs/remotes/origin/coverage >/dev/null 2>&1 || true
+              if git ls-remote --exit-code --heads origin coverage >/dev/null 2>&1; then
+                echo "'coverage' branch was created by another run."
+              else
+                echo "Failed to create 'coverage' branch." >&2
+                exit 1
+              fi
             fi
-          fi
-          restore_ref
+          popd >/dev/null
+
+          cleanup_bootstrap
           trap - EXIT
         fi
 
