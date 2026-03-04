@@ -306,6 +306,15 @@ runs:
         fi
         cp -f "$SRC" "${WORKTREE_DIR}/${BRANCH}/report.html"
 
+    - name: Remove report.html when report input is omitted
+      if: ${{ inputs.report == '' }}
+      env:
+        BRANCH: ${{ steps.branch.outputs.branch }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        rm -f "${WORKTREE_DIR}/${BRANCH}/report.html"
+
     - name: Commit & push changes to coverage branch
       env:
         BRANCH: ${{ steps.branch.outputs.branch }}
@@ -315,8 +324,9 @@ runs:
         pushd "$WORKTREE_DIR" >/dev/null
           git config --local user.email "action@github.com"
           git config --local user.name  "GitHub Action"
-          test ! -f "${BRANCH}/badge.svg"  || git add "${BRANCH}/badge.svg"
-          test ! -f "${BRANCH}/report.html" || git add "${BRANCH}/report.html"
+          # Stage generated branch content (including deletions) without pathspec errors
+          # when report.html has never existed.
+          git add -A -- "${BRANCH}"
           if [[ -n "$(git status --porcelain)" ]]; then
             git commit -m "update"
 
