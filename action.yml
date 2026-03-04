@@ -141,8 +141,20 @@ runs:
           echo '# Coverage branch' > README.md
           git add README.md
           git commit -m 'Add README.md'
-          # Push with auth via checkout action's token/remote config
-          git push origin coverage
+          # Push with auth via checkout action's token/remote config.
+          # If another concurrent run creates 'coverage' first, treat that as success.
+          if git push origin coverage; then
+            echo "Created 'coverage' branch."
+          else
+            echo "Initial push failed; checking whether 'coverage' was created concurrently..."
+            git fetch origin +refs/heads/coverage:refs/remotes/origin/coverage >/dev/null 2>&1 || true
+            if git ls-remote --exit-code --heads origin coverage >/dev/null 2>&1; then
+              echo "'coverage' branch was created by another run."
+            else
+              echo "Failed to create 'coverage' branch." >&2
+              exit 1
+            fi
+          fi
           if [[ -n "$SAVE_REF" ]]; then
             git checkout --force "$SAVE_REF" || git checkout --force --detach "$SAVE_SHA"
           else
