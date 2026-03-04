@@ -34,6 +34,7 @@ If you submitted a detailed HTML report of the coverage to the action, replace t
 - `coverage` (required): Coverage percentage (for example `83` or `83%`).
 - `report` (optional): Path to an HTML report file to publish as `report.html`.
 - `branch` (optional): Source branch override. Recommended for tag-triggered workflows where multiple branches may contain the same tag commit.
+  Also recommended for very large or restricted repos to avoid scanning all remote branches during tag-triggered branch resolution.
 
 ## Examples
 

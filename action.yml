@@ -89,21 +89,26 @@ runs:
           local b="$1"
           git check-ref-format --branch "$b" >/dev/null 2>&1
         }
+        ensure_tag_resolution_refs() {
+          # Only tag-triggered auto-mapping needs full remote-branch refs.
+          if git rev-parse --is-shallow-repository >/dev/null 2>&1 && [[ "$(git rev-parse --is-shallow-repository)" == "true" ]]; then
+            # Fully unshallow if possible so --contains works reliably.
+            git fetch --prune --tags --unshallow origin || git fetch --prune --tags --depth=1000 origin
+          else
+            git fetch --prune --tags origin
+          fi
+          if ! git fetch origin +refs/heads/*:refs/remotes/origin/* --prune; then
+            echo "Failed to fetch remote branches needed for tag-triggered branch resolution." >&2
+            echo "Set input 'branch' to the intended source branch." >&2
+            exit 1
+          fi
+        }
 
-        # --- Ensure we have enough history + refs ---
+        # --- Ensure 'origin' exists ---
         # Ensure 'origin' exists but never rewrite an existing remote URL/config.
         if ! git remote get-url origin >/dev/null 2>&1; then
           git remote add origin "${GITHUB_SERVER_URL:-https://github.com}/${GITHUB_REPOSITORY}.git"
         fi
-
-        if git rev-parse --is-shallow-repository >/dev/null 2>&1 && [[ "$(git rev-parse --is-shallow-repository)" == "true" ]]; then
-          # Fully unshallow if possible so --contains works reliably
-          git fetch --prune --tags --unshallow origin || git fetch --prune --tags --depth=1000 origin
-        else
-          git fetch --prune --tags origin
-        fi
-        # Fetch all remote heads so we can query them locally
-        git fetch origin +refs/heads/*:refs/remotes/origin/* --prune
 
         # Explicit override: useful for tag workflows where multiple branches may contain the tag.
         BRANCH="${INPUT_BRANCH:-}"
@@ -113,7 +118,7 @@ runs:
             echo "Invalid explicit branch input: '$BRANCH'" >&2
             exit 1
           fi
-          if ! git show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
+          if ! git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
             echo "Explicit branch '$BRANCH' was not found on origin." >&2
             exit 1
           fi
@@ -133,6 +138,7 @@ runs:
 
         # --- Tag path: map tag -> containing branch ---
         if [[ -z "$BRANCH" ]] && { [[ "${GITHUB_REF_TYPE:-}" == "tag" ]] || [[ "${GITHUB_REF:-}" == refs/tags/* ]]; }; then
+          ensure_tag_resolution_refs
           TAG="${GITHUB_REF_NAME:-${GITHUB_REF#refs/tags/}}"
           TAG_REF="tags/$TAG"
           TAG_SHA="$(git rev-list -n1 "$TAG_REF")"
