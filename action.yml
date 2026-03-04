@@ -269,6 +269,12 @@ runs:
           trap - EXIT
         fi
 
+        # Ensure local remote-tracking ref exists (actions/checkout often fetches only one branch).
+        if ! git fetch --no-tags origin +refs/heads/coverage:refs/remotes/origin/coverage; then
+          echo "Failed to fetch refs/remotes/origin/coverage." >&2
+          exit 1
+        fi
+
     - name: Check out coverage branch (worktree)
       shell: bash
       run: |
@@ -281,7 +287,7 @@ runs:
         fi
         git worktree prune || true
         # Use detached HEAD to avoid branch-name collisions when current checkout is already 'coverage'.
-        git worktree add --detach "$WORKTREE_DIR" origin/coverage
+        git worktree add --detach "$WORKTREE_DIR" refs/remotes/origin/coverage
         echo "WORKTREE_DIR=$WORKTREE_DIR" >> "$GITHUB_ENV"
         echo "Using worktree at $WORKTREE_DIR"
 
