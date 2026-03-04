@@ -183,7 +183,7 @@ runs:
         VALUE="$(printf "%.0f" "$PCT")%"
 
         # --- 2) Compute color with 0->33->66->100 anchors (smooth) ---
-        read HEX < <(awk -v p="$PCT" '
+        read -r HEX < <(awk -v p="$PCT" '
           function hsl2hex(h,s,l,   c,x,m,r,g,b,R,G,B) {
             c=(1 - ((2*l-1)<0?-(2*l-1):(2*l-1))) * s
             hprime=h/60.0
