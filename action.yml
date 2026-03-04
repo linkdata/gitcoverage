@@ -161,7 +161,8 @@ runs:
           WORKTREE_DIR="$(mktemp -d "${PWD}/.gitcoverage-worktree.XXXXXX")"
         fi
         git worktree prune || true
-        git worktree add -B coverage "$WORKTREE_DIR" origin/coverage
+        # Use detached HEAD to avoid branch-name collisions when current checkout is already 'coverage'.
+        git worktree add --detach "$WORKTREE_DIR" origin/coverage
         echo "WORKTREE_DIR=$WORKTREE_DIR" >> "$GITHUB_ENV"
         echo "Using worktree at $WORKTREE_DIR"
 
