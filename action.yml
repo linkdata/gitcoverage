@@ -44,11 +44,42 @@ runs:
       shell: bash
       env:
         INPUT_BRANCH: ${{ inputs.branch }}
+        GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
       run: |
         set -euo pipefail
 
         resolve_default_branch() {
-          git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@' || true
+          local d=""
+          d="$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@' || true)"
+          if [[ -n "$d" ]] && is_valid_branch_name "$d"; then
+            echo "$d"
+            return 0
+          fi
+
+          # If local origin/HEAD is absent or stale, query remote HEAD directly.
+          d="$(git ls-remote --symref origin HEAD 2>/dev/null | awk '/^ref:/ { sub("^refs/heads/", "", $2); print $2; exit }' || true)"
+          if [[ -n "$d" ]] && is_valid_branch_name "$d"; then
+            echo "$d"
+            return 0
+          fi
+
+          # Use GitHub event metadata when available.
+          d="${GITHUB_DEFAULT_BRANCH:-}"
+          if [[ -n "$d" ]] && is_valid_branch_name "$d"; then
+            echo "$d"
+            return 0
+          fi
+
+          # Last-resort heuristics for common repo defaults.
+          if git show-ref --verify --quiet refs/remotes/origin/main; then
+            echo "main"
+            return 0
+          fi
+          if git show-ref --verify --quiet refs/remotes/origin/master; then
+            echo "master"
+            return 0
+          fi
+          echo ""
         }
         is_detached_marker() {
           local b="$1"
