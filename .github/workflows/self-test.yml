@@ -1,0 +1,98 @@
+name: Self Test
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - action.yml
+      - README.md
+      - .github/workflows/self-test.yml
+  pull_request:
+    paths:
+      - action.yml
+      - README.md
+      - .github/workflows/self-test.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out action source
+        uses: actions/checkout@v4
+        with:
+          path: action-src
+
+      - name: Prepare local fixture repository
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git init --bare remote.git
+
+          git init .
+          git config user.email "ci@example.com"
+          git config user.name "CI"
+          git checkout -b main
+
+          mkdir -p reports
+          echo "initial" > reports/report.html
+          git add reports/report.html
+          git commit -m "init fixture"
+
+          git remote add origin "$PWD/remote.git"
+          git push -u origin main
+
+          git tag v-test
+          git push origin v-test
+
+          # Simulate a dirty tracked file before the action runs (regression guard for #1).
+          echo "dirty workspace" > reports/report.html
+
+          # Ensure explicit branch validation does not depend on local origin/* refs (guard for #2).
+          git update-ref -d refs/remotes/origin/main || true
+
+      - name: Run action with explicit branch on dirty workspace
+        uses: ./action-src
+        with:
+          coverage: "81.2%"
+          branch: main
+          report: reports/report.html
+
+      - name: Verify explicit branch run
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test "$(cat reports/report.html)" = "dirty workspace"
+          git --git-dir=remote.git rev-parse --verify refs/heads/coverage >/dev/null
+
+          files="$(git --git-dir=remote.git ls-tree --name-only -r coverage)"
+          echo "$files" | rg "^main/badge.svg$"
+          echo "$files" | rg "^main/report.html$"
+
+      - name: Run action in tag-triggered mode
+        uses: ./action-src
+        env:
+          GITHUB_REF_TYPE: tag
+          GITHUB_REF_NAME: v-test
+          GITHUB_REF: refs/tags/v-test
+          GITHUB_HEAD_REF: ""
+        with:
+          coverage: "82%"
+
+      - name: Verify tag-triggered run
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git clone remote.git verify >/dev/null 2>&1
+          pushd verify >/dev/null
+            git checkout coverage
+            test -f main/badge.svg
+            test ! -f main/report.html
+          popd >/dev/null
