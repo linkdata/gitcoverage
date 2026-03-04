@@ -441,7 +441,8 @@ runs:
           # Stage generated branch content (including deletions) without pathspec errors
           # when report.html has never existed.
           git add -A -- "${BRANCH}"
-          if [[ -n "$(git status --porcelain)" ]]; then
+          # Only proceed when this step actually staged changes for the target path.
+          if ! git diff --cached --quiet -- "${BRANCH}"; then
             git commit -m "update"
 
             max_attempts=5
