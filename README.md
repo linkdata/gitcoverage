@@ -8,6 +8,13 @@ This action has no dependencies except for `git`, the `bash` shell and common *n
 `awk`, `sed` and GNU coreutils (`mkdir, cp, rm, ls, cat, echo, printf`). This means it won't run on Windows
 runners; use `if: runner.os != 'Windows'` to exclude those in the workflow.
 
+Git features required by this action:
+- `git worktree add --detach` (documented in Git 2.5.6)
+- `git branch --format` (present in Git 2.13.7, absent in 2.12.5)
+- `git rev-parse --is-shallow-repository` (added in Git 2.15 release notes)
+
+Therefore, use **Git 2.15.0 or newer**.
+
 ## Usage
 
 You need to have given write permissions for the for the workflow.
