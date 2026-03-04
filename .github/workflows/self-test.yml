@@ -72,8 +72,8 @@ jobs:
           git --git-dir=remote.git rev-parse --verify refs/heads/coverage >/dev/null
 
           files="$(git --git-dir=remote.git ls-tree --name-only -r coverage)"
-          echo "$files" | rg "^main/badge.svg$"
-          echo "$files" | rg "^main/report.html$"
+          echo "$files" | grep -Fx "main/badge.svg"
+          echo "$files" | grep -Fx "main/report.html"
 
       - name: Run action in tag-triggered mode
         uses: ./action-src
