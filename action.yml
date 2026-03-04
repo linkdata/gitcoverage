@@ -294,10 +294,11 @@ runs:
       if: ${{ inputs.report != '' }}
       env:
         BRANCH: ${{ steps.branch.outputs.branch }}
+        INPUT_REPORT: ${{ inputs.report }}
       shell: bash
       run: |
         set -euo pipefail
-        SRC="${{ inputs.report }}"
+        SRC="$INPUT_REPORT"
         if [[ ! -f "$SRC" ]]; then
           echo "Report file not found at: $SRC" >&2
           exit 1
