@@ -47,8 +47,10 @@ runs:
         }
 
         # --- Ensure we have enough history + refs ---
-        # Make sure 'origin' is set (usually already set by actions/checkout)
-        git remote set-url origin "${GITHUB_SERVER_URL:-https://github.com}/${GITHUB_REPOSITORY}.git" || true
+        # Ensure 'origin' exists but never rewrite an existing remote URL/config.
+        if ! git remote get-url origin >/dev/null 2>&1; then
+          git remote add origin "${GITHUB_SERVER_URL:-https://github.com}/${GITHUB_REPOSITORY}.git"
+        fi
 
         if git rev-parse --is-shallow-repository >/dev/null 2>&1 && [[ "$(git rev-parse --is-shallow-repository)" == "true" ]]; then
           # Fully unshallow if possible so --contains works reliably
