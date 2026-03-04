@@ -123,8 +123,6 @@ runs:
         echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
 
     - name: Ensure 'coverage' branch exists (create orphan if needed)
-      env:
-        BRANCH: ${{ steps.branch.outputs.branch }}
       shell: bash
       run: |
         set -euo pipefail
@@ -133,7 +131,8 @@ runs:
           echo "'coverage' branch exists."
         else
           echo "Creating orphan 'coverage' branch..."
-          git checkout "${BRANCH}"
+          SAVE_REF="$(git symbolic-ref -q --short HEAD || true)"
+          SAVE_SHA="$(git rev-parse --verify HEAD)"
           git checkout --orphan coverage
           # Remove index entries (keep working tree) in a filename-safe way.
           while IFS= read -r -d '' path; do
@@ -144,7 +143,11 @@ runs:
           git commit -m 'Add README.md'
           # Push with auth via checkout action's token/remote config
           git push origin coverage
-          git checkout --force "${BRANCH}"
+          if [[ -n "$SAVE_REF" ]]; then
+            git checkout --force "$SAVE_REF" || git checkout --force --detach "$SAVE_SHA"
+          else
+            git checkout --force --detach "$SAVE_SHA"
+          fi
         fi
 
     - name: Check out coverage branch (worktree)
