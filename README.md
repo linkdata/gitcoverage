@@ -22,6 +22,12 @@ If you submitted a detailed HTML report of the coverage to the action, replace t
 
 `https://html-preview.github.io/?url=https://github.com/USERNAME/REPO/blob/coverage/BRANCH/report.html`
 
+### Inputs
+
+- `coverage` (required): Coverage percentage (for example `83` or `83%`).
+- `report` (optional): Path to an HTML report file to publish as `report.html`.
+- `branch` (optional): Source branch override. Recommended for tag-triggered workflows where multiple branches may contain the same tag commit.
+
 ## Examples
 
 Inside your .github/workflows/workflow.yml file:
@@ -85,4 +91,14 @@ jobs:
         with:
           coverage: ${{ steps.coverage.outputs.coverage }}
           report:   "coveragereport.html"
+```
+
+Tag workflow example with explicit source branch:
+
+```yml
+- name: Publish code coverage badge from tag build
+  uses: linkdata/gitcoverage@v3
+  with:
+    coverage: "91%"
+    branch:   "release/1.x"
 ```

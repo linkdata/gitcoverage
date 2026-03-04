@@ -22,6 +22,9 @@ inputs:
   coverage:
     description: "Coverage percentage (e.g. 83 or 83%)"
     required: true
+  branch:
+    description: "Optional source branch name override (recommended for tag-triggered workflows)"
+    required: false
   report:
     description: "Optional path to an HTML coverage report file to publish as report.html"
     required: false
@@ -39,6 +42,8 @@ runs:
     - name: Detect current branch (handles tags; fetches tags; robust)
       id: branch
       shell: bash
+      env:
+        INPUT_BRANCH: ${{ inputs.branch }}
       run: |
         set -euo pipefail
 
@@ -61,6 +66,23 @@ runs:
         # Fetch all remote heads so we can query them locally
         git fetch origin +refs/heads/*:refs/remotes/origin/* --prune
 
+        # Explicit override: useful for tag workflows where multiple branches may contain the tag.
+        BRANCH="${INPUT_BRANCH:-}"
+        BRANCH="$(echo "$BRANCH" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
+        if [[ -n "$BRANCH" ]]; then
+          if [[ "$BRANCH" == "HEAD" || "$BRANCH" =~ ^\(.+\)$ ]]; then
+            echo "Invalid explicit branch input: '$BRANCH'" >&2
+            exit 1
+          fi
+          if ! git show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
+            echo "Explicit branch '$BRANCH' was not found on origin." >&2
+            exit 1
+          fi
+          echo "Using explicit branch input: $BRANCH"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
         # --- Fast paths: PR source branch or branch ref ---
         if [[ -n "${GITHUB_HEAD_REF:-}" ]]; then
           BRANCH="${GITHUB_HEAD_REF}"
@@ -74,39 +96,64 @@ runs:
         if [[ -z "$BRANCH" ]] && { [[ "${GITHUB_REF_TYPE:-}" == "tag" ]] || [[ "${GITHUB_REF:-}" == refs/tags/* ]]; }; then
           TAG="${GITHUB_REF_NAME:-${GITHUB_REF#refs/tags/}}"
           TAG_REF="tags/$TAG"
+          TAG_SHA="$(git rev-list -n1 "$TAG_REF")"
           echo "Ref is a tag (${TAG}); resolving containing branch..."
 
-          # 1) Prefer remote branches that contain the tag commit
+          # 1) Gather remote branches that contain the tag commit
           CANDIDATES=()
           while IFS= read -r r; do
             [[ -z "$r" || "$r" == origin/HEAD ]] && continue
             CANDIDATES+=("${r#origin/}")
           done < <(git branch -r --format "%(refname:short)" --contains "$TAG_REF" 2>/dev/null || true)
 
-          # 2) If none (common in shallow graphs), pick branches whose TIP == tag commit
-          if [[ ${#CANDIDATES[@]} -eq 0 ]]; then
-            TAG_SHA="$(git rev-list -n1 "$TAG_REF")"
-            while IFS= read -r rb; do
-              [[ -z "$rb" ]] && continue
-              [[ "$rb" == origin/HEAD ]] && continue
-              b="${rb#origin/}"
-              BR_SHA="$(git rev-parse "$rb" 2>/dev/null || true)"
-              [[ -n "$BR_SHA" && "$BR_SHA" == "$TAG_SHA" ]] && CANDIDATES+=("$b")
-            done < <(git for-each-ref --format='%(refname:short)' refs/remotes/origin/)
+          # 2) Prefer branches whose TIP exactly matches the tagged commit.
+          TIP_MATCHES=()
+          while IFS= read -r rb; do
+            [[ -z "$rb" || "$rb" == origin/HEAD ]] && continue
+            b="${rb#origin/}"
+            BR_SHA="$(git rev-parse "$rb" 2>/dev/null || true)"
+            [[ -n "$BR_SHA" && "$BR_SHA" == "$TAG_SHA" ]] && TIP_MATCHES+=("$b")
+          done < <(git for-each-ref --format='%(refname:short)' refs/remotes/origin/)
+          if [[ ${#TIP_MATCHES[@]} -gt 0 ]]; then
+            CANDIDATES=("${TIP_MATCHES[@]}")
           fi
 
-          # 3) Choose best candidate: origin/HEAD > main/master > first
+          # 3) Choose nearest containing branch by smallest ahead distance from tag commit.
+          # If still ambiguous, fail instead of silently picking the wrong branch.
           DEF="$(resolve_default_branch)"
-          if [[ -n "$DEF" ]]; then
-            for b in "${CANDIDATES[@]}"; do [[ "$b" == "$DEF" ]] && BRANCH="$b" && break; done
-          fi
-          if [[ -z "$BRANCH" ]]; then
-            for pref in main master; do
-              for b in "${CANDIDATES[@]}"; do [[ "$b" == "$pref" ]] && BRANCH="$b" && break 2; done
-            done
-          fi
-          if [[ -z "$BRANCH" && ${#CANDIDATES[@]} -gt 0 ]]; then
+          if [[ ${#CANDIDATES[@]} -eq 1 ]]; then
             BRANCH="${CANDIDATES[0]}"
+          elif [[ ${#CANDIDATES[@]} -gt 1 ]]; then
+            BEST_BRANCH=""
+            BEST_DIST=""
+            TIED=0
+            for b in "${CANDIDATES[@]}"; do
+              dist="$(git rev-list --count "${TAG_REF}..origin/${b}" 2>/dev/null || echo 999999)"
+              [[ "$dist" =~ ^[0-9]+$ ]] || dist=999999
+              if [[ -z "$BEST_DIST" || "$dist" -lt "$BEST_DIST" ]]; then
+                BEST_DIST="$dist"
+                BEST_BRANCH="$b"
+                TIED=0
+              elif [[ "$dist" -eq "$BEST_DIST" ]]; then
+                if [[ -n "$DEF" && "$b" == "$DEF" ]]; then
+                  BEST_BRANCH="$b"
+                  TIED=0
+                elif [[ -n "$DEF" && "$BEST_BRANCH" == "$DEF" ]]; then
+                  :
+                else
+                  TIED=1
+                fi
+              fi
+            done
+
+            if [[ -n "$BEST_BRANCH" && "$TIED" -eq 0 ]]; then
+              BRANCH="$BEST_BRANCH"
+            else
+              echo "Ambiguous tag-to-branch mapping for tag '${TAG}'." >&2
+              echo "Candidates: ${CANDIDATES[*]}" >&2
+              echo "Set input 'branch' to the intended source branch." >&2
+              exit 1
+            fi
           fi
         fi
 
