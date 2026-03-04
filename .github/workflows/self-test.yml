@@ -50,10 +50,10 @@ jobs:
           git tag v-test
           git push origin v-test
 
-          # Simulate a dirty tracked file before the action runs (regression guard for #1).
+          # Simulate a dirty tracked file before the action runs
           echo "dirty workspace" > reports/report.html
 
-          # Ensure explicit branch validation does not depend on local origin/* refs (guard for #2).
+          # Ensure explicit branch validation does not depend on local origin/* refs
           git update-ref -d refs/remotes/origin/main || true
 
       - name: Run action with explicit branch on dirty workspace
