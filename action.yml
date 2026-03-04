@@ -50,6 +50,14 @@ runs:
         resolve_default_branch() {
           git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@' || true
         }
+        is_detached_marker() {
+          local b="$1"
+          [[ "$b" == "HEAD" || "$b" == "(no branch)" || "$b" == "(HEAD detached at "* || "$b" == "(HEAD detached from "* ]]
+        }
+        is_valid_branch_name() {
+          local b="$1"
+          git check-ref-format --branch "$b" >/dev/null 2>&1
+        }
 
         # --- Ensure we have enough history + refs ---
         # Ensure 'origin' exists but never rewrite an existing remote URL/config.
@@ -70,7 +78,7 @@ runs:
         BRANCH="${INPUT_BRANCH:-}"
         BRANCH="$(echo "$BRANCH" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
         if [[ -n "$BRANCH" ]]; then
-          if [[ "$BRANCH" == "HEAD" || "$BRANCH" =~ ^\(.+\)$ ]]; then
+          if is_detached_marker "$BRANCH" || ! is_valid_branch_name "$BRANCH"; then
             echo "Invalid explicit branch input: '$BRANCH'" >&2
             exit 1
           fi
@@ -158,10 +166,10 @@ runs:
         fi
 
         # --- Last resorts: never return a detached HEAD string ---
-        if [[ -z "$BRANCH" || "$BRANCH" == "HEAD" || "$BRANCH" =~ ^\(.+\)$ ]]; then
+        if [[ -z "$BRANCH" ]] || is_detached_marker "$BRANCH" || ! is_valid_branch_name "$BRANCH"; then
           BRANCH="$(resolve_default_branch)"
         fi
-        if [[ -z "$BRANCH" || "$BRANCH" == "HEAD" || "$BRANCH" =~ ^\(.+\)$ ]]; then
+        if [[ -z "$BRANCH" ]] || is_detached_marker "$BRANCH" || ! is_valid_branch_name "$BRANCH"; then
           echo "Could not determine branch (still detached at a tag). Consider actions/checkout with 'fetch-depth: 0'." >&2
           exit 1
         fi
