@@ -75,23 +75,22 @@ runs:
           echo "Ref is a tag (${TAG}); resolving containing branch..."
 
           # 1) Prefer remote branches that contain the tag commit
-          mapfile -t RMATCHES < <(git branch -r --format "%(refname:short)" --contains "$TAG_REF" 2>/dev/null || true)
           CANDIDATES=()
-          for r in "${RMATCHES[@]}"; do
-            [[ "$r" == origin/HEAD ]] && continue
+          while IFS= read -r r; do
+            [[ -z "$r" || "$r" == origin/HEAD ]] && continue
             CANDIDATES+=("${r#origin/}")
-          done
+          done < <(git branch -r --format "%(refname:short)" --contains "$TAG_REF" 2>/dev/null || true)
 
           # 2) If none (common in shallow graphs), pick branches whose TIP == tag commit
           if [[ ${#CANDIDATES[@]} -eq 0 ]]; then
             TAG_SHA="$(git rev-list -n1 "$TAG_REF")"
-            mapfile -t ALL_R < <(git for-each-ref --format='%(refname:short)' refs/remotes/origin/)
-            for rb in "${ALL_R[@]}"; do
+            while IFS= read -r rb; do
+              [[ -z "$rb" ]] && continue
               [[ "$rb" == origin/HEAD ]] && continue
               b="${rb#origin/}"
               BR_SHA="$(git rev-parse "$rb" 2>/dev/null || true)"
               [[ -n "$BR_SHA" && "$BR_SHA" == "$TAG_SHA" ]] && CANDIDATES+=("$b")
-            done
+            done < <(git for-each-ref --format='%(refname:short)' refs/remotes/origin/)
           fi
 
           # 3) Choose best candidate: origin/HEAD > main/master > first
