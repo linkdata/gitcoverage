@@ -149,11 +149,16 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        # Use a worktree so we don't disturb current checkout
-        rm -rf coverage
+        # Use an isolated worktree path so we don't clobber project dirs (e.g. ./coverage reports)
+        if [[ -n "${RUNNER_TEMP:-}" ]]; then
+          WORKTREE_DIR="$(mktemp -d "${RUNNER_TEMP}/gitcoverage-worktree.XXXXXX")"
+        else
+          WORKTREE_DIR="$(mktemp -d "${PWD}/.gitcoverage-worktree.XXXXXX")"
+        fi
         git worktree prune || true
-        git worktree add -B coverage coverage origin/coverage
-        echo "Using worktree at ./coverage"
+        git worktree add -B coverage "$WORKTREE_DIR" origin/coverage
+        echo "WORKTREE_DIR=$WORKTREE_DIR" >> "$GITHUB_ENV"
+        echo "Using worktree at $WORKTREE_DIR"
 
     - name: Prepare coverage/<branch> directory
       shell: bash
@@ -161,7 +166,7 @@ runs:
         BRANCH: ${{ steps.branch.outputs.branch }}
       run: |
         set -euo pipefail
-        mkdir -p "coverage/${BRANCH}"
+        mkdir -p "${WORKTREE_DIR}/${BRANCH}"
 
     - name: Parse coverage input and generate SVG badge
       shell: bash
@@ -278,7 +283,7 @@ runs:
         EOF
         )"
 
-        echo "$SVG" > "coverage/${BRANCH}/badge.svg"
+        echo "$SVG" > "${WORKTREE_DIR}/${BRANCH}/badge.svg"
 
     - name: Copy optional report.html
       if: ${{ inputs.report != '' }}
@@ -292,7 +297,7 @@ runs:
           echo "Report file not found at: $SRC" >&2
           exit 1
         fi
-        cp -f "$SRC" "coverage/${BRANCH}/report.html"
+        cp -f "$SRC" "${WORKTREE_DIR}/${BRANCH}/report.html"
 
     - name: Commit & push changes to coverage branch
       env:
@@ -300,7 +305,7 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        pushd coverage >/dev/null
+        pushd "$WORKTREE_DIR" >/dev/null
           git config --local user.email "action@github.com"
           git config --local user.name  "GitHub Action"
           test ! -f "${BRANCH}/badge.svg"  || git add "${BRANCH}/badge.svg"
@@ -337,6 +342,6 @@ runs:
         set -euo pipefail
         echo "Published:"
         echo " - ${BRANCH}/badge.svg"
-        if [[ -f "coverage/${BRANCH}/report.html" ]]; then
+        if [[ -f "${WORKTREE_DIR}/${BRANCH}/report.html" ]]; then
           echo " - ${BRANCH}/report.html"
         fi
