@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: linkdata/gitcoverage@v3
+      - uses: linkdata/gitcoverage@v6
         with:
           coverage: "83%"
           report:   "coveragereport.html.out"
@@ -95,7 +95,7 @@ jobs:
 
       - name: Publish code coverage badge (and optional report)
         if: runner.os != 'Windows'
-        uses: linkdata/gitcoverage@v3
+        uses: linkdata/gitcoverage@v6
         with:
           coverage: ${{ steps.coverage.outputs.coverage }}
           report:   "coveragereport.html"
@@ -105,7 +105,7 @@ Tag workflow example with explicit source branch:
 
 ```yml
 - name: Publish code coverage badge from tag build
-  uses: linkdata/gitcoverage@v3
+  uses: linkdata/gitcoverage@v6
   with:
     coverage: "91%"
     branch:   "release/1.x"
