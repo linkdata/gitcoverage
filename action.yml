@@ -133,10 +133,10 @@ runs:
           echo "Creating orphan 'coverage' branch..."
           git checkout "${BRANCH}"
           git checkout --orphan coverage
-          # remove index entries (keep working tree)
-          if [[ -n "$(git ls-files)" ]]; then
-            git rm --cached $(git ls-files)
-          fi
+          # Remove index entries (keep working tree) in a filename-safe way.
+          while IFS= read -r -d '' path; do
+            git rm --cached -- "$path"
+          done < <(git ls-files -z)
           echo '# Coverage branch' > README.md
           git add README.md
           git commit -m 'Add README.md'
