@@ -133,6 +133,20 @@ runs:
           echo "Creating orphan 'coverage' branch..."
           SAVE_REF="$(git symbolic-ref -q --short HEAD || true)"
           SAVE_SHA="$(git rev-parse --verify HEAD)"
+          NEED_RESTORE=1
+          restore_ref() {
+            local rc=$?
+            if [[ "$NEED_RESTORE" == "1" ]]; then
+              if [[ -n "$SAVE_REF" ]]; then
+                git checkout --force "$SAVE_REF" || git checkout --force --detach "$SAVE_SHA" || true
+              else
+                git checkout --force --detach "$SAVE_SHA" || true
+              fi
+              NEED_RESTORE=0
+            fi
+            return "$rc"
+          }
+          trap restore_ref EXIT
           git checkout --orphan coverage
           # Remove index entries (keep working tree) in a filename-safe way.
           while IFS= read -r -d '' path; do
@@ -155,11 +169,8 @@ runs:
               exit 1
             fi
           fi
-          if [[ -n "$SAVE_REF" ]]; then
-            git checkout --force "$SAVE_REF" || git checkout --force --detach "$SAVE_SHA"
-          else
-            git checkout --force --detach "$SAVE_SHA"
-          fi
+          restore_ref
+          trap - EXIT
         fi
 
     - name: Check out coverage branch (worktree)
