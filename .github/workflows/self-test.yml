@@ -50,6 +50,15 @@ jobs:
           git tag v-test
           git push origin v-test
 
+          # Detached/tag-only commit (not contained by any remote branch)
+          git checkout --detach
+          echo "detached-only" > detached-only.txt
+          git add detached-only.txt
+          git commit -m "detached tag fixture"
+          git tag v-detached
+          git push origin v-detached
+          git checkout main
+
           # Simulate a dirty tracked file before the action runs
           echo "dirty workspace" > reports/report.html
 
@@ -96,3 +105,21 @@ jobs:
             test -f main/badge.svg
             test ! -f main/report.html
           popd >/dev/null
+
+      - name: Run action for detached tag (should fail)
+        id: detached_tag
+        continue-on-error: true
+        uses: ./action-src
+        env:
+          GITHUB_REF_TYPE: tag
+          GITHUB_REF_NAME: v-detached
+          GITHUB_REF: refs/tags/v-detached
+          GITHUB_HEAD_REF: ""
+        with:
+          coverage: "77%"
+
+      - name: Verify detached tag run failed
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ steps.detached_tag.outcome }}" = "failure"
