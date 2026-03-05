@@ -45,8 +45,17 @@ runs:
       env:
         INPUT_BRANCH: ${{ inputs.branch }}
         GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        CTX_HEAD_REF: ${{ env.GITCOVERAGE_HEAD_REF }}
+        CTX_REF_TYPE: ${{ env.GITCOVERAGE_REF_TYPE }}
+        CTX_REF_NAME: ${{ env.GITCOVERAGE_REF_NAME }}
+        CTX_REF: ${{ env.GITCOVERAGE_REF }}
       run: |
         set -euo pipefail
+
+        HEAD_REF="${CTX_HEAD_REF:-${GITHUB_HEAD_REF:-}}"
+        REF_TYPE="${CTX_REF_TYPE:-${GITHUB_REF_TYPE:-}}"
+        REF_NAME="${CTX_REF_NAME:-${GITHUB_REF_NAME:-}}"
+        REF_FULL="${CTX_REF:-${GITHUB_REF:-}}"
 
         resolve_default_branch() {
           local d=""
@@ -128,18 +137,18 @@ runs:
         fi
 
         # --- Fast paths: PR source branch or branch ref ---
-        if [[ -n "${GITHUB_HEAD_REF:-}" ]]; then
-          BRANCH="${GITHUB_HEAD_REF}"
-        elif [[ "${GITHUB_REF_TYPE:-}" == "branch" && -n "${GITHUB_REF_NAME:-}" ]]; then
-          BRANCH="${GITHUB_REF_NAME}"
+        if [[ -n "$HEAD_REF" ]]; then
+          BRANCH="${HEAD_REF}"
+        elif [[ "$REF_TYPE" == "branch" && -n "$REF_NAME" ]]; then
+          BRANCH="${REF_NAME}"
         else
           BRANCH=""
         fi
 
         # --- Tag path: map tag -> containing branch ---
-        if [[ -z "$BRANCH" ]] && { [[ "${GITHUB_REF_TYPE:-}" == "tag" ]] || [[ "${GITHUB_REF:-}" == refs/tags/* ]]; }; then
+        if [[ -z "$BRANCH" ]] && { [[ "$REF_TYPE" == "tag" ]] || [[ "$REF_FULL" == refs/tags/* ]]; }; then
           ensure_tag_resolution_refs
-          TAG="${GITHUB_REF_NAME:-${GITHUB_REF#refs/tags/}}"
+          TAG="${REF_NAME:-${REF_FULL#refs/tags/}}"
           TAG_REF="tags/$TAG"
           TAG_SHA="$(git rev-list -n1 "$TAG_REF")"
           echo "Ref is a tag (${TAG}); resolving containing branch..."
