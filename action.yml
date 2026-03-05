@@ -35,19 +35,31 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
+        to_posix_path() {
+          local p="$1"
+          if command -v cygpath >/dev/null 2>&1; then
+            cygpath -u "$p"
+          else
+            printf '%s\n' "${p//\\//}"
+          fi
+        }
+
+        WORKSPACE_PATH="${GITHUB_WORKSPACE:-$PWD}"
+        WORKSPACE_PATH="$(to_posix_path "$WORKSPACE_PATH")"
         # Trust only this workspace. If the default global config is not writable,
         # use a temporary global config file and persist it for subsequent steps.
-        if ! git config --global --add safe.directory "$GITHUB_WORKSPACE" >/dev/null 2>&1; then
+        if ! git config --global --add safe.directory "$WORKSPACE_PATH" >/dev/null 2>&1; then
           if [[ -n "${RUNNER_TEMP:-}" ]]; then
-            SAFE_GLOBAL="${RUNNER_TEMP}/gitcoverage-global.gitconfig"
+            SAFE_ROOT="$(to_posix_path "$RUNNER_TEMP")"
+            SAFE_GLOBAL="${SAFE_ROOT}/gitcoverage-global.gitconfig"
           else
-            SAFE_GLOBAL="${GITHUB_WORKSPACE}/.gitcoverage-global.gitconfig"
+            SAFE_GLOBAL="${WORKSPACE_PATH}/.gitcoverage-global.gitconfig"
           fi
           touch "$SAFE_GLOBAL"
           export GIT_CONFIG_GLOBAL="$SAFE_GLOBAL"
           echo "GIT_CONFIG_GLOBAL=$SAFE_GLOBAL" >> "$GITHUB_ENV"
-          if ! git config --global --add safe.directory "$GITHUB_WORKSPACE"; then
-            echo "Failed to configure safe.directory for '$GITHUB_WORKSPACE'." >&2
+          if ! git config --global --add safe.directory "$WORKSPACE_PATH"; then
+            echo "Failed to configure safe.directory for '$WORKSPACE_PATH'." >&2
             exit 1
           fi
         fi
@@ -151,8 +163,10 @@ runs:
           exit 0
         fi
 
-        # --- Fast paths: PR source branch or branch ref ---
-        if [[ -n "$HEAD_REF" ]]; then
+        # --- Fast paths: branch refs; never let PR head-ref override tag context ---
+        if [[ "$REF_TYPE" == "tag" || "$REF_FULL" == refs/tags/* ]]; then
+          BRANCH=""
+        elif [[ -n "$HEAD_REF" ]]; then
           BRANCH="${HEAD_REF}"
         elif [[ "$REF_TYPE" == "branch" && -n "$REF_NAME" ]]; then
           BRANCH="${REF_NAME}"
@@ -246,13 +260,22 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
+        to_posix_path() {
+          local p="$1"
+          if command -v cygpath >/dev/null 2>&1; then
+            cygpath -u "$p"
+          else
+            printf '%s\n' "${p//\\//}"
+          fi
+        }
         # Does 'coverage' branch exist on origin?
         if git ls-remote --exit-code --heads origin coverage >/dev/null 2>&1; then
           echo "'coverage' branch exists."
         else
           echo "Creating orphan 'coverage' branch..."
           if [[ -n "${RUNNER_TEMP:-}" ]]; then
-            BOOTSTRAP_DIR="$(mktemp -d "${RUNNER_TEMP}/gitcoverage-bootstrap.XXXXXX")"
+            TMP_ROOT="$(to_posix_path "$RUNNER_TEMP")"
+            BOOTSTRAP_DIR="$(mktemp -d "${TMP_ROOT%/}/gitcoverage-bootstrap.XXXXXX")"
           else
             BOOTSTRAP_DIR="$(mktemp -d "${PWD}/.gitcoverage-bootstrap.XXXXXX")"
           fi
@@ -307,9 +330,18 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
+        to_posix_path() {
+          local p="$1"
+          if command -v cygpath >/dev/null 2>&1; then
+            cygpath -u "$p"
+          else
+            printf '%s\n' "${p//\\//}"
+          fi
+        }
         # Use an isolated worktree path so we don't clobber project dirs (e.g. ./coverage reports)
         if [[ -n "${RUNNER_TEMP:-}" ]]; then
-          WORKTREE_DIR="$(mktemp -d "${RUNNER_TEMP}/gitcoverage-worktree.XXXXXX")"
+          TMP_ROOT="$(to_posix_path "$RUNNER_TEMP")"
+          WORKTREE_DIR="$(mktemp -d "${TMP_ROOT%/}/gitcoverage-worktree.XXXXXX")"
         else
           WORKTREE_DIR="$(mktemp -d "${PWD}/.gitcoverage-worktree.XXXXXX")"
         fi
@@ -457,7 +489,19 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        SRC="$INPUT_REPORT"
+        to_posix_path() {
+          local p="$1"
+          # Convert Windows absolute paths when possible.
+          if [[ "$p" =~ ^[A-Za-z]:[\\/].* || "$p" =~ ^\\\\.* ]]; then
+            if command -v cygpath >/dev/null 2>&1; then
+              cygpath -u "$p"
+              return 0
+            fi
+          fi
+          # Keep relative paths relative but normalize separators.
+          printf '%s\n' "${p//\\//}"
+        }
+        SRC="$(to_posix_path "$INPUT_REPORT")"
         if [[ ! -f "$SRC" ]]; then
           echo "Report file not found at: $SRC" >&2
           exit 1

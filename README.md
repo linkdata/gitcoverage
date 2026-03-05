@@ -4,9 +4,11 @@
 
 Generate code coverage badge and push it and optional HTML report to the 'coverage' branch.
 
-This action has no dependencies except for `git`, the `bash` shell and common *nix command line utilities
-`awk`, `sed` and GNU coreutils (`mkdir, cp, rm, ls, cat, echo, printf`). This means it won't run on Windows
-runners; use `if: runner.os != 'Windows'` to exclude those in the workflow.
+This action has no dependencies except for `git`, a `bash` shell and common *nix command line utilities
+`awk`, `sed` and GNU coreutils (`mkdir, cp, rm, ls, cat, echo, printf`).
+
+It supports Linux/macOS runners and Windows runners with Bash tooling (Git Bash/WSL-enabled images such as
+`windows-2025`).
 
 Git features required by this action:
 - `git worktree add --detach` (documented in Git 2.5.6)
@@ -89,14 +91,12 @@ jobs:
         run: go build .
 
       - name: Calculate code coverage
-        if: runner.os != 'Windows'
         id: coverage
         run: |
           echo "COVERAGE=$(go tool cover -func=coverage | tail -n 1 | tr -s '\t' | cut -f 3)" >> $GITHUB_OUTPUT
           go tool cover -html=coverage -o=coveragereport.html
 
       - name: Publish code coverage badge (and optional report)
-        if: runner.os != 'Windows'
         uses: linkdata/gitcoverage@v6
         with:
           coverage: ${{ steps.coverage.outputs.coverage }}
