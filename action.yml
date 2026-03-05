@@ -300,7 +300,8 @@ runs:
             git checkout --orphan coverage
             git rm -rf --cached . >/dev/null 2>&1 || true
             echo '# Coverage branch' > README.md
-            git add README.md
+            # Force-add so bootstrap works even if README.md is ignored in source repo rules.
+            git add -f README.md
             git -c commit.gpgsign=false commit -m 'Add README.md'
             # Push with auth via checkout action's token/remote config.
             # If another concurrent run creates 'coverage' first, treat that as success.
