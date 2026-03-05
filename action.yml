@@ -145,6 +145,8 @@ runs:
         if ! git remote get-url origin >/dev/null 2>&1; then
           git remote add origin "${GITHUB_SERVER_URL:-https://github.com}/${GITHUB_REPOSITORY}.git"
         fi
+        REPO_ROOT="$(git rev-parse --show-toplevel)"
+        echo "GITCOVERAGE_REPO_ROOT=$REPO_ROOT" >> "$GITHUB_ENV"
 
         # Explicit override: useful for tag workflows where multiple branches may contain the tag.
         BRANCH="${INPUT_BRANCH:-}"
@@ -302,12 +304,13 @@ runs:
             git -c commit.gpgsign=false commit -m 'Add README.md'
             # Push with auth via checkout action's token/remote config.
             # If another concurrent run creates 'coverage' first, treat that as success.
-            if git push origin coverage; then
+            COVERAGE_HEAD="$(git rev-parse HEAD)"
+            if git -C "$GITCOVERAGE_REPO_ROOT" push origin "${COVERAGE_HEAD}:refs/heads/coverage"; then
               echo "Created 'coverage' branch."
             else
               echo "Initial push failed; checking whether 'coverage' was created concurrently..."
-              git fetch origin +refs/heads/coverage:refs/remotes/origin/coverage >/dev/null 2>&1 || true
-              if git ls-remote --exit-code --heads origin coverage >/dev/null 2>&1; then
+              git -C "$GITCOVERAGE_REPO_ROOT" fetch origin +refs/heads/coverage:refs/remotes/origin/coverage >/dev/null 2>&1 || true
+              if git -C "$GITCOVERAGE_REPO_ROOT" ls-remote --exit-code --heads origin coverage >/dev/null 2>&1; then
                 echo "'coverage' branch was created by another run."
               else
                 echo "Failed to create 'coverage' branch." >&2
@@ -321,7 +324,7 @@ runs:
         fi
 
         # Ensure local remote-tracking ref exists (actions/checkout often fetches only one branch).
-        if ! git fetch --no-tags origin +refs/heads/coverage:refs/remotes/origin/coverage; then
+        if ! git -C "$GITCOVERAGE_REPO_ROOT" fetch --no-tags origin +refs/heads/coverage:refs/remotes/origin/coverage; then
           echo "Failed to fetch refs/remotes/origin/coverage." >&2
           exit 1
         fi
@@ -536,7 +539,8 @@ runs:
             max_attempts=5
             attempt=1
             while true; do
-              if git push origin HEAD:coverage; then
+              WORKTREE_HEAD="$(git rev-parse HEAD)"
+              if git -C "$GITCOVERAGE_REPO_ROOT" push origin "${WORKTREE_HEAD}:refs/heads/coverage"; then
                 break
               fi
 
@@ -546,7 +550,7 @@ runs:
               fi
 
               echo "Push rejected (attempt ${attempt}/${max_attempts}). Rebasing onto latest origin/coverage..."
-              git fetch origin +refs/heads/coverage:refs/remotes/origin/coverage
+              git -C "$GITCOVERAGE_REPO_ROOT" fetch origin +refs/heads/coverage:refs/remotes/origin/coverage
               # Prefer this run's regenerated files if both runs touched the same paths.
               if ! git rebase -X theirs refs/remotes/origin/coverage; then
                 git rebase --abort || true

@@ -51,7 +51,7 @@ jobs:
           git add reports/report.html
           git commit -m "init fixture"
 
-          git remote add origin "$PWD/remote.git"
+          git remote add origin "remote.git"
           git push -u origin main
 
           git tag v-test
