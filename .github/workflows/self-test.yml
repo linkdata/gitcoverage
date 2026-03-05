@@ -94,7 +94,6 @@ jobs:
       - name: Run action in tag-triggered mode
         uses: ./action-src
         env:
-          GITHUB_HEAD_REF: ""
           GITCOVERAGE_REF_TYPE: tag
           GITCOVERAGE_REF_NAME: v-test
           GITCOVERAGE_REF: refs/tags/v-test
@@ -119,7 +118,6 @@ jobs:
         continue-on-error: true
         uses: ./action-src
         env:
-          GITHUB_HEAD_REF: ""
           GITCOVERAGE_REF_TYPE: tag
           GITCOVERAGE_REF_NAME: v-detached
           GITCOVERAGE_REF: refs/tags/v-detached

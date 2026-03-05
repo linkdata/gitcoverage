@@ -163,8 +163,10 @@ runs:
           exit 0
         fi
 
-        # --- Fast paths: PR source branch or branch ref ---
-        if [[ -n "$HEAD_REF" ]]; then
+        # --- Fast paths: branch refs; never let PR head-ref override tag context ---
+        if [[ "$REF_TYPE" == "tag" || "$REF_FULL" == refs/tags/* ]]; then
+          BRANCH=""
+        elif [[ -n "$HEAD_REF" ]]; then
           BRANCH="${HEAD_REF}"
         elif [[ "$REF_TYPE" == "branch" && -n "$REF_NAME" ]]; then
           BRANCH="${REF_NAME}"
