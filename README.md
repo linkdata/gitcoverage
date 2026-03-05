@@ -10,12 +10,7 @@ This action has no dependencies except for `git`, a `bash` shell and common *nix
 It supports Linux/macOS runners and Windows runners with Bash tooling (Git Bash/WSL-enabled images such as
 `windows-2025`).
 
-Git features required by this action:
-- `git worktree add --detach` (documented in Git 2.5.6)
-- `git branch --format` (present in Git 2.13.7, absent in 2.12.5)
-- `git rev-parse --is-shallow-repository` (added in Git 2.15 release notes)
-
-Therefore, use **Git 2.15.0 or newer**.
+Requires **Git 2.15.0 or newer**.
 
 ## Usage
 
@@ -39,6 +34,7 @@ If you submitted a detailed HTML report of the coverage to the action, replace t
 - `report` (optional): Path to an HTML report file to publish as `report.html`.
 - `branch` (optional): Source branch override. Recommended for tag-triggered workflows where multiple branches may contain the same tag commit.
   Also recommended for very large or restricted repos to avoid scanning all remote branches during tag-triggered branch resolution.
+  A Git-valid branch name may still be an invalid Windows path component (for example names containing `<`, `>`, `|`, or `"`), which can fail on Windows runners because this action writes files under `<branch>/...`.
 
 ## Examples
 
