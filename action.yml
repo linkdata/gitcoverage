@@ -35,7 +35,22 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+        # Trust only this workspace. If the default global config is not writable,
+        # use a temporary global config file and persist it for subsequent steps.
+        if ! git config --global --add safe.directory "$GITHUB_WORKSPACE" >/dev/null 2>&1; then
+          if [[ -n "${RUNNER_TEMP:-}" ]]; then
+            SAFE_GLOBAL="${RUNNER_TEMP}/gitcoverage-global.gitconfig"
+          else
+            SAFE_GLOBAL="${GITHUB_WORKSPACE}/.gitcoverage-global.gitconfig"
+          fi
+          touch "$SAFE_GLOBAL"
+          export GIT_CONFIG_GLOBAL="$SAFE_GLOBAL"
+          echo "GIT_CONFIG_GLOBAL=$SAFE_GLOBAL" >> "$GITHUB_ENV"
+          if ! git config --global --add safe.directory "$GITHUB_WORKSPACE"; then
+            echo "Failed to configure safe.directory for '$GITHUB_WORKSPACE'." >&2
+            exit 1
+          fi
+        fi
         git config --local user.email "action@github.com"
         git config --local user.name  "GitHub Action"
 
@@ -261,7 +276,7 @@ runs:
             git rm -rf --cached . >/dev/null 2>&1 || true
             echo '# Coverage branch' > README.md
             git add README.md
-            git commit -m 'Add README.md'
+            git -c commit.gpgsign=false commit -m 'Add README.md'
             # Push with auth via checkout action's token/remote config.
             # If another concurrent run creates 'coverage' first, treat that as success.
             if git push origin coverage; then
@@ -472,7 +487,7 @@ runs:
           git add -A -- "${BRANCH}"
           # Only proceed when this step actually staged changes for the target path.
           if ! git diff --cached --quiet -- "${BRANCH}"; then
-            git commit -m "update"
+            git -c commit.gpgsign=false commit -m "update"
 
             max_attempts=5
             attempt=1

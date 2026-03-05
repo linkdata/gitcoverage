@@ -19,6 +19,8 @@ Therefore, use **Git 2.15.0 or newer**.
 
 You need to have given write permissions for the for the workflow.
 If the 'coverage' branch does not exist, it will be created as an orphan (without main repo history).
+The action creates bot commits with signing disabled (`commit.gpgsign=false`) for compatibility with runners that enforce local signing config but have no key.
+If your `coverage` branch requires signed commits, configure signing keys on the runner or relax that branch rule.
 Reference the generated badge in your README.md like this:
 
 ```md
