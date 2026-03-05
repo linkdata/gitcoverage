@@ -10,7 +10,7 @@ This action has no dependencies except for `git`, a `bash` shell and common *nix
 It supports Linux/macOS runners and Windows runners with Bash tooling (Git Bash/WSL-enabled images such as
 `windows-2025`).
 
-Requires **Git 2.15.0 or newer**.
+Requires **Git 2.15.0 or newer** (the action fails fast on older versions).
 
 ## Usage
 
@@ -34,7 +34,7 @@ If you submitted a detailed HTML report of the coverage to the action, replace t
 - `report` (optional): Path to an HTML report file to publish as `report.html`.
 - `branch` (optional): Source branch override. Recommended for tag-triggered workflows where multiple branches may contain the same tag commit.
   Also recommended for very large or restricted repos to avoid scanning all remote branches during tag-triggered branch resolution.
-  A Git-valid branch name may still be an invalid Windows path component (for example names containing `<`, `>`, `|`, or `"`), which can fail on Windows runners because this action writes files under `<branch>/...`.
+  On Windows runners, the action applies a strict compatibility filter and requires branch names to match `[A-Za-z0-9._/+-]+`.
 
 ## Examples
 

@@ -57,6 +57,11 @@ jobs:
           git tag v-test
           git push origin v-test
 
+          # Branch used to verify Windows-only branch-name filtering.
+          # '=' is Git-valid but rejected by our Windows compatibility regex.
+          git branch 'feat=compat'
+          git push origin 'feat=compat'
+
           # Detached/tag-only commit (not contained by any remote branch)
           git checkout --detach
           echo "detached-only" > detached-only.txt
@@ -78,6 +83,24 @@ jobs:
           coverage: "81.2%"
           branch: main
           report: reports/report.html
+
+      - name: Run action with Windows-restricted branch charset
+        id: windows_branch
+        continue-on-error: true
+        uses: ./action-src
+        with:
+          coverage: "80%"
+          branch: "feat=compat"
+
+      - name: Verify Windows-only branch filter
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${RUNNER_OS}" == "Windows" ]]; then
+            test "${{ steps.windows_branch.outcome }}" = "failure"
+          else
+            test "${{ steps.windows_branch.outcome }}" = "success"
+          fi
 
       - name: Verify explicit branch run
         shell: bash
