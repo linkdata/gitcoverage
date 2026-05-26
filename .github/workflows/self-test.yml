@@ -62,6 +62,12 @@ jobs:
           git branch 'feat=compat'
           git push origin 'feat=compat'
 
+          # Branches used to verify exact remote branch checks.
+          git branch 'foo/coverage'
+          git push origin 'foo/coverage'
+          git branch 'only/partial'
+          git push origin 'only/partial'
+
           # Detached/tag-only commit (not contained by any remote branch)
           git checkout --detach
           echo "detached-only" > detached-only.txt
@@ -101,6 +107,20 @@ jobs:
           else
             test "${{ steps.windows_branch.outcome }}" = "success"
           fi
+
+      - name: Run action with partial branch-name match (should fail)
+        id: partial_branch
+        continue-on-error: true
+        uses: ./action-src
+        with:
+          coverage: "80%"
+          branch: "partial"
+
+      - name: Verify partial branch-name match failed
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ steps.partial_branch.outcome }}" = "failure"
 
       - name: Verify explicit branch run
         shell: bash

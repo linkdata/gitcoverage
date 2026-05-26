@@ -35,6 +35,7 @@ If you submitted a detailed HTML report of the coverage to the action, replace t
 - `branch` (optional): Source branch override. Recommended for tag-triggered workflows where multiple branches may contain the same tag commit.
   Also recommended for very large or restricted repos to avoid scanning all remote branches during tag-triggered branch resolution.
   On Windows runners, the action applies a strict compatibility filter and requires branch names to match `[A-Za-z0-9._/+-]+`.
+  This filter does not reject Windows-reserved path components such as `CON`, `NUL`, `AUX`, `COM1`, or `LPT9`; avoid those names on Windows runners.
 
 ## Examples
 
