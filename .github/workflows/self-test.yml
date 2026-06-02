@@ -128,9 +128,9 @@ jobs:
           set -euo pipefail
 
           test "$(cat reports/report.html)" = "dirty workspace"
-          git --git-dir=remote.git rev-parse --verify refs/heads/coverage >/dev/null
+          git --git-dir=remote.git rev-parse --verify refs/heads/gitcoverage >/dev/null
 
-          files="$(git --git-dir=remote.git ls-tree --name-only -r coverage)"
+          files="$(git --git-dir=remote.git ls-tree --name-only -r gitcoverage)"
           echo "$files" | grep -Fx "main/badge.svg"
           echo "$files" | grep -Fx "main/report.html"
 
@@ -151,7 +151,7 @@ jobs:
 
           git clone remote.git verify >/dev/null 2>&1
           pushd verify >/dev/null
-            git checkout coverage
+            git checkout gitcoverage
             test -f main/badge.svg
             test ! -f main/report.html
           popd >/dev/null

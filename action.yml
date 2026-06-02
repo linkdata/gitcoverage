@@ -1,11 +1,11 @@
-# Generate code coverage badge and push it to the 'coverage' branch.
+# Generate code coverage badge and push it to the 'gitcoverage' branch.
 # Reference it in your README.md like this:
 #
-#  [![coverage](https://github.com/USERNAME/REPO/blob/coverage/BRANCH/badge.svg)](#)
+#  [![coverage](https://github.com/USERNAME/REPO/blob/gitcoverage/BRANCH/badge.svg)](#)
 #
 # If you submitted a detailed HTML report of the coverage, replace the '#' with:
 #
-#  https://html-preview.github.io/?url=https://github.com/USERNAME/REPO/blob/coverage/BRANCH/report.html
+#  https://html-preview.github.io/?url=https://github.com/USERNAME/REPO/blob/gitcoverage/BRANCH/report.html
 #
 # You need to have given write permissions for the for the workflow:
 #
@@ -16,7 +16,7 @@ name: "gitcoverage"
 branding:
   icon: "percent"
   color: "green"
-description: "Create/update <branch>/badge.svg (+ optional report.html) on the 'coverage' branch."
+description: "Create/update <branch>/badge.svg (+ optional report.html) on the 'gitcoverage' branch."
 author: "johan@linkdata.se"
 inputs:
   coverage:
@@ -287,7 +287,7 @@ runs:
         echo "Resolved branch: $BRANCH"
         echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
 
-    - name: Ensure 'coverage' branch exists (create orphan if needed)
+    - name: Ensure 'gitcoverage' branch exists (create orphan if needed)
       shell: bash
       run: |
         set -euo pipefail
@@ -299,11 +299,11 @@ runs:
             printf '%s\n' "${p//\\//}"
           fi
         }
-        # Does 'coverage' branch exist on origin?
-        if git ls-remote --exit-code origin refs/heads/coverage >/dev/null 2>&1; then
-          echo "'coverage' branch exists."
+        # Does 'gitcoverage' branch exist on origin?
+        if git ls-remote --exit-code origin refs/heads/gitcoverage >/dev/null 2>&1; then
+          echo "'gitcoverage' branch exists."
         else
-          echo "Creating orphan 'coverage' branch..."
+          echo "Creating orphan 'gitcoverage' branch..."
           if [[ -n "${RUNNER_TEMP:-}" ]]; then
             TMP_ROOT="$(to_posix_path "$RUNNER_TEMP")"
             BOOTSTRAP_DIR="$(mktemp -d "${TMP_ROOT%/}/gitcoverage-bootstrap.XXXXXX")"
@@ -326,24 +326,24 @@ runs:
           # Isolate bootstrap work from the caller's checkout to handle dirty tracked files safely.
           git worktree add --detach "$BOOTSTRAP_DIR" HEAD
           pushd "$BOOTSTRAP_DIR" >/dev/null
-            git checkout --orphan coverage
+            git checkout --orphan gitcoverage
             git rm -rf --cached . >/dev/null 2>&1 || true
-            echo '# Coverage branch' > README.md
+            echo '# gitcoverage branch' > README.md
             # Force-add so bootstrap works even if README.md is ignored in source repo rules.
             git add -f README.md
             git -c commit.gpgsign=false commit -m 'Add README.md'
             # Push with auth via checkout action's token/remote config.
-            # If another concurrent run creates 'coverage' first, treat that as success.
-            COVERAGE_HEAD="$(git rev-parse HEAD)"
-            if git -C "$GITCOVERAGE_REPO_ROOT" push origin "${COVERAGE_HEAD}:refs/heads/coverage"; then
-              echo "Created 'coverage' branch."
+            # If another concurrent run creates 'gitcoverage' first, treat that as success.
+            GITCOVERAGE_HEAD="$(git rev-parse HEAD)"
+            if git -C "$GITCOVERAGE_REPO_ROOT" push origin "${GITCOVERAGE_HEAD}:refs/heads/gitcoverage"; then
+              echo "Created 'gitcoverage' branch."
             else
-              echo "Initial push failed; checking whether 'coverage' was created concurrently..."
-              git -C "$GITCOVERAGE_REPO_ROOT" fetch origin +refs/heads/coverage:refs/remotes/origin/coverage >/dev/null 2>&1 || true
-              if git -C "$GITCOVERAGE_REPO_ROOT" ls-remote --exit-code origin refs/heads/coverage >/dev/null 2>&1; then
-                echo "'coverage' branch was created by another run."
+              echo "Initial push failed; checking whether 'gitcoverage' was created concurrently..."
+              git -C "$GITCOVERAGE_REPO_ROOT" fetch origin +refs/heads/gitcoverage:refs/remotes/origin/gitcoverage >/dev/null 2>&1 || true
+              if git -C "$GITCOVERAGE_REPO_ROOT" ls-remote --exit-code origin refs/heads/gitcoverage >/dev/null 2>&1; then
+                echo "'gitcoverage' branch was created by another run."
               else
-                echo "Failed to create 'coverage' branch." >&2
+                echo "Failed to create 'gitcoverage' branch." >&2
                 exit 1
               fi
             fi
@@ -354,12 +354,12 @@ runs:
         fi
 
         # Ensure local remote-tracking ref exists (actions/checkout often fetches only one branch).
-        if ! git -C "$GITCOVERAGE_REPO_ROOT" fetch --no-tags origin +refs/heads/coverage:refs/remotes/origin/coverage; then
-          echo "Failed to fetch refs/remotes/origin/coverage." >&2
+        if ! git -C "$GITCOVERAGE_REPO_ROOT" fetch --no-tags origin +refs/heads/gitcoverage:refs/remotes/origin/gitcoverage; then
+          echo "Failed to fetch refs/remotes/origin/gitcoverage." >&2
           exit 1
         fi
 
-    - name: Check out coverage branch (worktree)
+    - name: Check out gitcoverage branch (worktree)
       shell: bash
       run: |
         set -euo pipefail
@@ -379,12 +379,12 @@ runs:
           WORKTREE_DIR="$(mktemp -d "${PWD}/.gitcoverage-worktree.XXXXXX")"
         fi
         git worktree prune || true
-        # Use detached HEAD to avoid branch-name collisions when current checkout is already 'coverage'.
-        git worktree add --detach "$WORKTREE_DIR" refs/remotes/origin/coverage
+        # Use detached HEAD to avoid branch-name collisions when current checkout is already 'gitcoverage'.
+        git worktree add --detach "$WORKTREE_DIR" refs/remotes/origin/gitcoverage
         echo "WORKTREE_DIR=$WORKTREE_DIR" >> "$GITHUB_ENV"
         echo "Using worktree at $WORKTREE_DIR"
 
-    - name: Prepare coverage/<branch> directory
+    - name: Prepare output directory
       shell: bash
       env:
         BRANCH: ${{ steps.branch.outputs.branch }}
@@ -550,7 +550,7 @@ runs:
         set -euo pipefail
         rm -f "${WORKTREE_DIR}/${BRANCH}/report.html"
 
-    - name: Commit & push changes to coverage branch
+    - name: Commit & push changes to gitcoverage branch
       env:
         BRANCH: ${{ steps.branch.outputs.branch }}
       shell: bash
@@ -570,21 +570,21 @@ runs:
             attempt=1
             while true; do
               WORKTREE_HEAD="$(git rev-parse HEAD)"
-              if git -C "$GITCOVERAGE_REPO_ROOT" push origin "${WORKTREE_HEAD}:refs/heads/coverage"; then
+              if git -C "$GITCOVERAGE_REPO_ROOT" push origin "${WORKTREE_HEAD}:refs/heads/gitcoverage"; then
                 break
               fi
 
               if (( attempt >= max_attempts )); then
-                echo "Failed to push coverage branch after ${max_attempts} attempts." >&2
+                echo "Failed to push gitcoverage branch after ${max_attempts} attempts." >&2
                 exit 1
               fi
 
-              echo "Push rejected (attempt ${attempt}/${max_attempts}). Rebasing onto latest origin/coverage..."
-              git -C "$GITCOVERAGE_REPO_ROOT" fetch origin +refs/heads/coverage:refs/remotes/origin/coverage
+              echo "Push rejected (attempt ${attempt}/${max_attempts}). Rebasing onto latest origin/gitcoverage..."
+              git -C "$GITCOVERAGE_REPO_ROOT" fetch origin +refs/heads/gitcoverage:refs/remotes/origin/gitcoverage
               # Prefer this run's regenerated files if both runs touched the same paths.
-              if ! git rebase -X theirs refs/remotes/origin/coverage; then
+              if ! git rebase -X theirs refs/remotes/origin/gitcoverage; then
                 git rebase --abort || true
-                echo "Automatic rebase failed due to conflicts in coverage branch updates." >&2
+                echo "Automatic rebase failed due to conflicts in gitcoverage branch updates." >&2
                 exit 1
               fi
               attempt=$(( attempt + 1 ))

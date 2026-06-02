@@ -2,7 +2,7 @@
 
 # gitcoverage
 
-Generate code coverage badge and push it and optional HTML report to the 'coverage' branch.
+Generate code coverage badge and push it and optional HTML report to the 'gitcoverage' branch.
 
 This action has no dependencies except for `git`, a `bash` shell and common *nix command line utilities
 `awk`, `sed` and GNU coreutils (`mkdir, cp, rm, ls, cat, echo, printf`).
@@ -15,18 +15,18 @@ Requires **Git 2.15.0 or newer** (the action fails fast on older versions).
 ## Usage
 
 You need to have given write permissions for the for the workflow job that runs this action.
-If the 'coverage' branch does not exist, it will be created as an orphan (without main repo history).
+If the 'gitcoverage' branch does not exist, it will be created as an orphan (without main repo history).
 The action creates bot commits with signing disabled (`commit.gpgsign=false`) for compatibility with runners that enforce local signing config but have no key.
-If your `coverage` branch requires signed commits, configure signing keys on the runner or relax that branch rule.
+If your `gitcoverage` branch requires signed commits, configure signing keys on the runner or relax that branch rule.
 Reference the generated badge in your README.md like this:
 
 ```md
-[![coverage](https://github.com/USERNAME/REPO/blob/coverage/BRANCH/badge.svg)](#)
+[![coverage](https://github.com/USERNAME/REPO/blob/gitcoverage/BRANCH/badge.svg)](#)
 ```
 
 If you submitted a detailed HTML report of the coverage to the action, replace the '#' with:
 
-`https://html-preview.github.io/?url=https://github.com/USERNAME/REPO/blob/coverage/BRANCH/report.html`
+`https://html-preview.github.io/?url=https://github.com/USERNAME/REPO/blob/gitcoverage/BRANCH/report.html`
 
 ### Inputs
 
