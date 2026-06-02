@@ -14,7 +14,7 @@ Requires **Git 2.15.0 or newer** (the action fails fast on older versions).
 
 ## Usage
 
-You need to have given write permissions for the for the workflow.
+You need to have given write permissions for the for the workflow job that runs this action.
 If the 'coverage' branch does not exist, it will be created as an orphan (without main repo history).
 The action creates bot commits with signing disabled (`commit.gpgsign=false`) for compatibility with runners that enforce local signing config but have no key.
 If your `coverage` branch requires signed commits, configure signing keys on the runner or relax that branch rule.
@@ -49,8 +49,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: linkdata/gitcoverage@v7
+      - uses: actions/checkout@v6
+      - uses: linkdata/gitcoverage@v8
         with:
           coverage: "83%"
           report:   "coveragereport.html.out"
@@ -59,52 +59,111 @@ jobs:
 More complete example using Go:
 
 ```yml
+name: build
+
 permissions:
-  contents: write
+  contents: read
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  build:
+  audit:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        go:
-          - "stable"
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
-          go-version: ${{ matrix.go }}
+          go-version: stable
 
-      - name: Go Generate
+      - name: Generate
         run: go generate ./...
 
-      - name: Go Test
-        run: go test -coverprofile=coverage ./...
+      - name: Go vet
+        run: go vet ./...
 
-      - name: Go Build
-        run: go build .
+      - name: Check gofmt
+        run: |
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then
+            echo "The following files are not gofmt-formatted:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: Test
+        run: go test -tags debug -bench=. -coverprofile=coverage.out ./...
+
+      - name: Staticcheck
+        run: |
+          go install honnef.co/go/tools/cmd/staticcheck@latest
+          staticcheck ./...
+
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@v2.26.1
+        with:
+          args: ./...
+
+      - name: Upload code coverage
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage
+          path: coverage.out
+          retention-days: 1
+
+      - name: Go report card
+        uses: creekorful/goreportcard-action@v1.0
+        continue-on-error: true
+
+  build:
+    needs: audit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: stable
+
+      - name: Generate
+        run: go generate ./...
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Download code coverage
+        uses: actions/download-artifact@v8
+        with:
+          name: coverage
 
       - name: Calculate code coverage
         id: coverage
         run: |
-          echo "COVERAGE=$(go tool cover -func=coverage | tail -n 1 | tr -s '\t' | cut -f 3)" >> $GITHUB_OUTPUT
-          go tool cover -html=coverage -o=coveragereport.html
+          echo "COVERAGE=$(go tool cover -func=coverage.out | tail -n 1 | tr -s '\t' | cut -f 3)" >> "$GITHUB_OUTPUT"
+          go tool cover -html=coverage.out -o=coveragereport.html.out
 
       - name: Publish code coverage badge (and optional report)
-        uses: linkdata/gitcoverage@v7
+        uses: linkdata/gitcoverage@v8
         with:
           coverage: ${{ steps.coverage.outputs.coverage }}
-          report:   "coveragereport.html"
+          report:   "coveragereport.html.out"
 ```
 
 Tag workflow example with explicit source branch:
 
 ```yml
 - name: Publish code coverage badge from tag build
-  uses: linkdata/gitcoverage@v7
+  uses: linkdata/gitcoverage@v8
   with:
     coverage: "91%"
     branch:   "release/1.x"
