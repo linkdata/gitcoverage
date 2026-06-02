@@ -99,7 +99,7 @@ jobs:
           fi
 
       - name: Test
-        run: go test -tags debug -bench=. -coverprofile=coverage.out ./...
+        run: go test -race -coverprofile=coverage.out ./...
 
       - name: Staticcheck
         run: |
