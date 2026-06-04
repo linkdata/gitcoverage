@@ -107,6 +107,9 @@ jobs:
           go install honnef.co/go/tools/cmd/staticcheck@latest
           staticcheck ./...
 
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@latest
+
       - name: Run Gosec Security Scanner
         uses: securego/gosec@v2.26.1
         with:
