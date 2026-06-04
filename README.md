@@ -60,7 +60,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - uses: linkdata/gitcoverage@v9
+      - uses: linkdata/gitcoverage@v10
         with:
           coverage: "83%"
           report:   "coveragereport.html.out"
@@ -165,7 +165,7 @@ jobs:
           name: coverage
 
       - name: Publish code coverage badge (and optional report)
-        uses: linkdata/gitcoverage@v9
+        uses: linkdata/gitcoverage@v10
         with:
           coverage: ${{ needs.build.outputs.coverage }}
           report:   "coveragereport.html.out"
@@ -176,7 +176,7 @@ Tag workflow example with explicit source branch:
 
 ```yml
 - name: Publish code coverage badge from tag build
-  uses: linkdata/gitcoverage@v9
+  uses: linkdata/gitcoverage@v10
   with:
     coverage: "91%"
     branch:   "release/1.x"
