@@ -34,6 +34,45 @@ jobs:
         with:
           path: action-src
 
+      - name: Credential helper returns x-access-token (unit)
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The fixture below uses a local file-based remote that never invokes a
+          # credential helper, so this is the only place the HTTPS helper output is
+          # exercised directly. The helper string MUST stay byte-identical to the one
+          # configured by the 'Configure Git credential helper' step in action.yml.
+          export GIT_CONFIG_NOSYSTEM=1
+          export GIT_TERMINAL_PROMPT=0
+          TMP_CFG="$(mktemp)"
+          export GIT_CONFIG_GLOBAL="$TMP_CFG"
+          # The helper command is stored literally; $GITCOVERAGE_GIT_TOKEN is expanded
+          # by the helper at git-invocation time, not here.
+          # shellcheck disable=SC2016
+          git config --global 'credential.https://github.com.helper' \
+            '!f() { if test "$1" = get && test -n "${GITCOVERAGE_GIT_TOKEN}"; then echo "username=x-access-token"; echo "password=${GITCOVERAGE_GIT_TOKEN}"; fi; }; f'
+
+          # The token value must never be written into the config file.
+          if grep -q 'unit-test-token-123' "$TMP_CFG"; then
+            echo "token value leaked into git config" >&2
+            exit 1
+          fi
+
+          # Token present: helper returns x-access-token and the token as password.
+          # 'git credential fill' requires the trailing blank line; use printf for LF.
+          out="$(printf 'protocol=https\nhost=github.com\n\n' | env GITCOVERAGE_GIT_TOKEN=unit-test-token-123 git credential fill)"
+          printf '%s\n' "$out" | grep -q '^username=x-access-token$'
+          printf '%s\n' "$out" | grep -q '^password=unit-test-token-123$'
+
+          # Empty token: helper emits nothing, so no credentials are returned.
+          empty_out="$(printf 'protocol=https\nhost=github.com\n\n' | env GITCOVERAGE_GIT_TOKEN= git credential fill 2>/dev/null || true)"
+          if printf '%s\n' "$empty_out" | grep -q '^password='; then
+            echo "credential helper leaked a password with an empty token" >&2
+            exit 1
+          fi
+          rm -f "$TMP_CFG"
+          echo "credential helper unit test passed"
+
       - name: Prepare local fixture repository
         shell: bash
         run: |
@@ -134,6 +173,20 @@ jobs:
           echo "$files" | grep -Fx "main/badge.svg"
           echo "$files" | grep -Fx "main/report.html"
 
+      - name: Verify no credential helper configured without token
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The runs so far passed no 'token', so the action must not have registered
+          # a credential helper. Read the action's global config (the action exports
+          # GIT_CONFIG_GLOBAL via GITHUB_ENV when it uses an isolated config). Check the
+          # scoped key only, to tolerate any helper a runner may preconfigure.
+          SERVER_URL="${GITHUB_SERVER_URL:-https://github.com}"
+          SERVER_URL="${SERVER_URL%/}"
+          helpers="$(git config --global --get-all "credential.${SERVER_URL}.helper" || true)"
+          test -z "$helpers"
+          echo "no credential helper configured without token (verified)"
+
       - name: Run action in tag-triggered mode
         uses: ./action-src
         env:
@@ -173,3 +226,44 @@ jobs:
         run: |
           set -euo pipefail
           test "${{ steps.detached_tag.outcome }}" = "failure"
+
+      - name: Run action with token (regression)
+        uses: ./action-src
+        with:
+          coverage: "75%"
+          branch: main
+          token: ${{ github.token }}
+
+      - name: Verify credential helper cleared after token run
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Pushes here target the local file remote, which never invokes the helper,
+          # so this proves the token input does not regress the push and that the
+          # always() cleanup removed the helper afterwards.
+          SERVER_URL="${GITHUB_SERVER_URL:-https://github.com}"
+          SERVER_URL="${SERVER_URL%/}"
+          helpers="$(git config --global --get-all "credential.${SERVER_URL}.helper" || true)"
+          test -z "$helpers"
+          echo "credential helper cleared after successful token run (verified)"
+
+      - name: Run action with token on invalid branch (should fail)
+        id: token_failure
+        continue-on-error: true
+        uses: ./action-src
+        with:
+          coverage: "70%"
+          branch: "partial"
+          token: ${{ github.token }}
+
+      - name: Verify failed token run still cleared credential helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ steps.token_failure.outcome }}" = "failure"
+          # The always() cleanup must run even when an earlier step fails.
+          SERVER_URL="${GITHUB_SERVER_URL:-https://github.com}"
+          SERVER_URL="${SERVER_URL%/}"
+          helpers="$(git config --global --get-all "credential.${SERVER_URL}.helper" || true)"
+          test -z "$helpers"
+          echo "credential helper cleared after failed token run (verified)"
