@@ -122,12 +122,47 @@ jobs:
           # Ensure explicit branch validation does not depend on local origin/* refs
           git update-ref -d refs/remotes/origin/main || true
 
+      - name: Run action in pull request context (should skip)
+        id: pr_skip
+        uses: ./action-src
+        env:
+          GITCOVERAGE_EVENT_NAME: pull_request
+          GITCOVERAGE_PR_HEAD_REPO_FORK: "false"
+        with:
+          coverage: "99%"
+          branch: main
+          report: reports/report.html
+
+      - name: Run action with fork-head context (should skip)
+        id: fork_head_skip
+        uses: ./action-src
+        env:
+          GITCOVERAGE_EVENT_NAME: workflow_dispatch
+          GITCOVERAGE_PR_HEAD_REPO_FORK: "true"
+        with:
+          coverage: "98%"
+          branch: main
+          report: reports/report.html
+
+      - name: Verify pull request runs did not publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ steps.pr_skip.outputs.should-publish }}" = "false"
+          test "${{ steps.fork_head_skip.outputs.should-publish }}" = "false"
+          if git --git-dir=remote.git rev-parse --verify refs/heads/gitcoverage >/dev/null 2>&1; then
+            echo "pull request skip path created gitcoverage branch" >&2
+            exit 1
+          fi
+          echo "pull request skip path did not publish (verified)"
+
       - name: Run action with explicit branch on dirty workspace
         uses: ./action-src
         with:
           coverage: "81.2%"
           branch: main
           report: reports/report.html
+          run-on-pull-request: true
 
       - name: Run action with Windows-restricted branch charset
         id: windows_branch
@@ -136,6 +171,7 @@ jobs:
         with:
           coverage: "80%"
           branch: "feat=compat"
+          run-on-pull-request: true
 
       - name: Verify Windows-only branch filter
         shell: bash
@@ -154,6 +190,7 @@ jobs:
         with:
           coverage: "80%"
           branch: "partial"
+          run-on-pull-request: true
 
       - name: Verify partial branch-name match failed
         shell: bash
@@ -196,6 +233,7 @@ jobs:
           GITCOVERAGE_HEAD_REF: ""
         with:
           coverage: "82%"
+          run-on-pull-request: true
 
       - name: Verify tag-triggered run
         shell: bash
@@ -220,6 +258,7 @@ jobs:
           GITCOVERAGE_HEAD_REF: ""
         with:
           coverage: "77%"
+          run-on-pull-request: true
 
       - name: Verify detached tag run failed
         shell: bash
@@ -233,6 +272,7 @@ jobs:
           coverage: "75%"
           branch: main
           token: ${{ github.token }}
+          run-on-pull-request: true
 
       - name: Verify credential helper cleared after token run
         shell: bash
@@ -255,6 +295,7 @@ jobs:
           coverage: "70%"
           branch: "partial"
           token: ${{ github.token }}
+          run-on-pull-request: true
 
       - name: Verify failed token run still cleared credential helper
         shell: bash

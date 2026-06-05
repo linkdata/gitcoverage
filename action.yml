@@ -1,16 +1,27 @@
-# Generate code coverage badge and push it to the 'gitcoverage' branch.
+# Generate a code coverage badge and push it to the 'gitcoverage' branch.
 # Reference it in your README.md like this:
 #
 #  [![coverage](https://github.com/USERNAME/REPO/blob/gitcoverage/BRANCH/badge.svg)](#)
 #
-# If you submitted a detailed HTML report of the coverage, replace the '#' with:
+# If you publish a detailed HTML coverage report, replace the '#' with:
 #
 #  https://html-preview.github.io/?url=https://github.com/USERNAME/REPO/blob/gitcoverage/BRANCH/report.html
 #
-# You need to have given write permissions for the for the workflow:
+# The badge publishing job needs write permissions:
 #
 #   permissions:
 #     contents: write
+#
+# If your workflow also runs on pull requests, run tests there but gate the
+# badge publish job/step to default-branch pushes:
+#
+#   if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
+#
+# Fork pull_request runs receive a read-only GITHUB_TOKEN, and PR-state badges
+# are usually not intended. By default this action skips pull_request /
+# pull_request_target events and succeeds without pushing. Set
+# run-on-pull-request: true only for trusted PR workflows where publishing is
+# intentional and the token has write access.
 
 name: "gitcoverage"
 branding:
@@ -31,10 +42,65 @@ inputs:
   token:
     description: "GitHub token used to push updates to the gitcoverage branch"
     required: false
+  run-on-pull-request:
+    description: "When true, attempt publishing on pull_request / pull_request_target events. The default is false because PR-state badges are usually not intended and publishing requires write access."
+    required: false
+    default: "false"
+outputs:
+  should-publish:
+    description: "Whether this run should publish coverage artifacts."
+    value: ${{ steps.guard.outputs.should-publish }}
 runs:
   using: "composite"
   steps:
+    - name: Decide whether to publish
+      id: guard
+      shell: bash
+      env:
+        INPUT_RUN_ON_PULL_REQUEST: ${{ inputs.run-on-pull-request }}
+        CTX_EVENT_NAME: ${{ env.GITCOVERAGE_EVENT_NAME }}
+        CTX_PR_HEAD_REPO_FORK: ${{ env.GITCOVERAGE_PR_HEAD_REPO_FORK }}
+        GITHUB_CONTEXT_EVENT_NAME: ${{ github.event_name }}
+        GITHUB_CONTEXT_PR_HEAD_REPO_FORK: ${{ github.event.pull_request.head.repo.fork }}
+      run: |
+        set -euo pipefail
+
+        bool_value() {
+          printf '%s' "$1" | tr '[:upper:]' '[:lower:]'
+        }
+
+        RUN_ON_PR="$(bool_value "$INPUT_RUN_ON_PULL_REQUEST")"
+        case "$RUN_ON_PR" in
+          true|1|yes|on)
+            RUN_ON_PR="true"
+            ;;
+          false|0|no|off|"")
+            RUN_ON_PR="false"
+            ;;
+          *)
+            echo "Invalid run-on-pull-request value: '$INPUT_RUN_ON_PULL_REQUEST' (expected true or false)." >&2
+            exit 1
+            ;;
+        esac
+
+        EVENT_NAME="${CTX_EVENT_NAME:-${GITHUB_CONTEXT_EVENT_NAME:-${GITHUB_EVENT_NAME:-}}}"
+        PR_HEAD_REPO_FORK="${CTX_PR_HEAD_REPO_FORK:-${GITHUB_CONTEXT_PR_HEAD_REPO_FORK:-false}}"
+        PR_HEAD_REPO_FORK="$(bool_value "$PR_HEAD_REPO_FORK")"
+
+        SHOULD_PUBLISH="true"
+        if [[ "$RUN_ON_PR" == "false" ]]; then
+          if [[ "$EVENT_NAME" == "pull_request" || "$EVENT_NAME" == "pull_request_target" || "$PR_HEAD_REPO_FORK" == "true" ]]; then
+            SHOULD_PUBLISH="false"
+          fi
+        fi
+
+        if [[ "$SHOULD_PUBLISH" == "false" ]]; then
+          echo "::notice title=gitcoverage::Skipping coverage badge publish on event '${EVENT_NAME:-unknown}' (badge publishing needs write access, which is unavailable on pull requests, especially from forks). This is expected; set run-on-pull-request: true to override."
+        fi
+        echo "should-publish=$SHOULD_PUBLISH" >> "$GITHUB_OUTPUT"
+
     - name: Sanity / git identity
+      if: ${{ steps.guard.outputs.should-publish == 'true' }}
       shell: bash
       run: |
         set -euo pipefail
@@ -85,7 +151,7 @@ runs:
         git config --local user.name  "GitHub Action"
 
     - name: Configure Git credential helper (when token provided)
-      if: ${{ inputs.token != '' }}
+      if: ${{ steps.guard.outputs.should-publish == 'true' && inputs.token != '' }}
       shell: bash
       run: |
         set -euo pipefail
@@ -102,6 +168,7 @@ runs:
           '!f() { if test "$1" = get && test -n "${GITCOVERAGE_GIT_TOKEN}"; then echo "username=x-access-token"; echo "password=${GITCOVERAGE_GIT_TOKEN}"; fi; }; f'
 
     - name: Detect current branch (handles tags; fetches tags; robust)
+      if: ${{ steps.guard.outputs.should-publish == 'true' }}
       id: branch
       shell: bash
       env:
@@ -310,6 +377,7 @@ runs:
         echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
 
     - name: Ensure 'gitcoverage' branch exists (create orphan if needed)
+      if: ${{ steps.guard.outputs.should-publish == 'true' }}
       shell: bash
       env:
         # Network-op step: carry the token so the credential helper can authenticate
@@ -386,6 +454,7 @@ runs:
         fi
 
     - name: Check out gitcoverage branch (worktree)
+      if: ${{ steps.guard.outputs.should-publish == 'true' }}
       shell: bash
       run: |
         set -euo pipefail
@@ -411,6 +480,7 @@ runs:
         echo "Using worktree at $WORKTREE_DIR"
 
     - name: Prepare output directory
+      if: ${{ steps.guard.outputs.should-publish == 'true' }}
       shell: bash
       env:
         BRANCH: ${{ steps.branch.outputs.branch }}
@@ -419,6 +489,7 @@ runs:
         mkdir -p "${WORKTREE_DIR}/${BRANCH}"
 
     - name: Parse coverage input and generate SVG badge
+      if: ${{ steps.guard.outputs.should-publish == 'true' }}
       shell: bash
       env:
         BRANCH: ${{ steps.branch.outputs.branch }}
@@ -541,7 +612,7 @@ runs:
         echo "$SVG" > "${WORKTREE_DIR}/${BRANCH}/badge.svg"
 
     - name: Copy optional report.html
-      if: ${{ inputs.report != '' }}
+      if: ${{ steps.guard.outputs.should-publish == 'true' && inputs.report != '' }}
       env:
         BRANCH: ${{ steps.branch.outputs.branch }}
         INPUT_REPORT: ${{ inputs.report }}
@@ -568,7 +639,7 @@ runs:
         cp -f "$SRC" "${WORKTREE_DIR}/${BRANCH}/report.html"
 
     - name: Remove report.html when report input is omitted
-      if: ${{ inputs.report == '' }}
+      if: ${{ steps.guard.outputs.should-publish == 'true' && inputs.report == '' }}
       env:
         BRANCH: ${{ steps.branch.outputs.branch }}
       shell: bash
@@ -577,6 +648,7 @@ runs:
         rm -f "${WORKTREE_DIR}/${BRANCH}/report.html"
 
     - name: Commit & push changes to gitcoverage branch
+      if: ${{ steps.guard.outputs.should-publish == 'true' }}
       env:
         BRANCH: ${{ steps.branch.outputs.branch }}
         # Network-op step: carry the token so the credential helper can authenticate
@@ -624,6 +696,7 @@ runs:
         popd >/dev/null
 
     - name: Summary
+      if: ${{ steps.guard.outputs.should-publish == 'true' }}
       env:
         BRANCH: ${{ steps.branch.outputs.branch }}
       shell: bash
@@ -636,7 +709,7 @@ runs:
         fi
 
     - name: Cleanup worktree
-      if: ${{ always() }}
+      if: ${{ always() && steps.guard.outputs.should-publish == 'true' }}
       shell: bash
       run: |
         set -euo pipefail
@@ -647,7 +720,7 @@ runs:
         git worktree prune || true
 
     - name: Clear Git credential helper
-      if: ${{ always() && inputs.token != '' }}
+      if: ${{ always() && steps.guard.outputs.should-publish == 'true' && inputs.token != '' }}
       shell: bash
       run: |
         set -euo pipefail

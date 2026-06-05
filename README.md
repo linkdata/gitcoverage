@@ -2,7 +2,7 @@
 
 # gitcoverage
 
-Generate code coverage badge and push it and optional HTML report to the 'gitcoverage' branch.
+Generate a code coverage badge, plus an optional HTML report, and push it to the 'gitcoverage' branch.
 
 This action has no dependencies except for `git`, a `bash` shell and common *nix command line utilities
 `awk`, `sed` and GNU coreutils (`mkdir, cp, rm, ls, cat, echo, printf`).
@@ -14,7 +14,7 @@ Requires **Git 2.15.0 or newer** (the action fails fast on older versions).
 
 ## Usage
 
-You need to have given write permissions for the for the workflow job that runs this action.
+The badge publishing job needs `contents: write`.
 If the 'gitcoverage' branch does not exist, it will be created as an orphan (without main repo history).
 The action creates bot commits with signing disabled (`commit.gpgsign=false`) for compatibility with runners that enforce local signing config but have no key.
 If your `gitcoverage` branch requires signed commits, configure signing keys on the runner or relax that branch rule.
@@ -27,7 +27,7 @@ Reference the generated badge in your README.md like this:
 [![coverage](https://github.com/USERNAME/REPO/blob/gitcoverage/BRANCH/badge.svg)](#)
 ```
 
-If you submitted a detailed HTML report of the coverage to the action, replace the '#' with:
+If you publish a detailed HTML coverage report, replace the '#' with:
 
 `https://html-preview.github.io/?url=https://github.com/USERNAME/REPO/blob/gitcoverage/BRANCH/report.html`
 
@@ -42,17 +42,53 @@ If you submitted a detailed HTML report of the coverage to the action, replace t
   Also recommended for very large or restricted repos to avoid scanning all remote branches during tag-triggered branch resolution.
   On Windows runners, the action applies a strict compatibility filter and requires branch names to match `[A-Za-z0-9._/+-]+`.
   This filter does not reject Windows-reserved path components such as `CON`, `NUL`, `AUX`, `COM1`, or `LPT9`; avoid those names on Windows runners.
+- `run-on-pull-request` (optional, default `false`): Attempt publishing on `pull_request` and `pull_request_target` events.
+  Use only for trusted PR workflows where PR-state badge publishing is intentional and the token can push.
+
+### Outputs
+
+- `should-publish`: `true` when the action proceeds with badge publishing, or `false` when it skips because of the pull request guard.
+
+### Pull requests and forks
+
+Fork `pull_request` runs receive a read-only `GITHUB_TOKEN`, regardless of workflow `permissions`, and PR-state badges are usually not intended.
+By default, gitcoverage skips `pull_request` and `pull_request_target` events, emits a notice, and succeeds without pushing.
+Set `run-on-pull-request: true` only for trusted PR workflows where PR-state badge publishing is intentional and the token has write access.
 
 ## Examples
 
 Inside your .github/workflows/workflow.yml file:
 
 ```yml
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
 permissions:
   contents: read
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      coverage: ${{ steps.coverage.outputs.coverage }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Run tests
+        id: coverage
+        run: |
+          ./test
+          echo "coverage=83%" >> "$GITHUB_OUTPUT"
+
   coverage:
+    needs: build
+    if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -60,10 +96,9 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - uses: linkdata/gitcoverage@v10
+      - uses: linkdata/gitcoverage@v11
         with:
-          coverage: "83%"
-          report:   "coveragereport.html.out"
+          coverage: ${{ needs.build.outputs.coverage }}
           token:    ${{ github.token }}
 ```
 
@@ -151,6 +186,7 @@ jobs:
 
   coverage:
     needs: build
+    if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -165,7 +201,7 @@ jobs:
           name: coverage
 
       - name: Publish code coverage badge (and optional report)
-        uses: linkdata/gitcoverage@v10
+        uses: linkdata/gitcoverage@v11
         with:
           coverage: ${{ needs.build.outputs.coverage }}
           report:   "coveragereport.html.out"
@@ -176,7 +212,7 @@ Tag workflow example with explicit source branch:
 
 ```yml
 - name: Publish code coverage badge from tag build
-  uses: linkdata/gitcoverage@v10
+  uses: linkdata/gitcoverage@v11
   with:
     coverage: "91%"
     branch:   "release/1.x"
