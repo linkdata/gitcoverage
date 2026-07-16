@@ -177,10 +177,6 @@ jobs:
           path: coveragereport.html.out
           retention-days: 1
 
-      - name: Go report card
-        uses: creekorful/goreportcard-action@v1.0
-        continue-on-error: true
-
       - name: Build
         run: go build -v ./...
 
